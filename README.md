@@ -3,7 +3,6 @@
 ## Objective
 - Continue practicing WebGL and Typescript
 - Experiment with noise functions to procedurally generate the surface of a planet
-- Review surface reflection models
 
 ## Base Code
 The code we have provided for this assignment features the following:
