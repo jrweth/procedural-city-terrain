@@ -79,6 +79,24 @@ README contains the following information:
   Please be as detailed as you can; not only will this help you explain your work
   to recruiters, but it helps us understand your project when we grade it!
 
+## Inspiration
+### Cliffs
+![](img/cliff.jpg)
+
+[(Image Source)](https://i.pinimg.com/236x/a6/91/7c/a6917cbe80e81736058cdcfe60e90447.jpg)
+
+### Stairs
+![](img/stairs.jpg) 
+
+Use a sawtooth / stepping function to create stairs. [(Image Source)](https://i.pinimg.com/originals/43/ba/5c/43ba5caaeed0f24b19bbbc16f884966c.jpg)
+
+### Pond
+![](img/pond.png)
+
+Use any obj loader to load assets into your scenes. Be sure to credit the loader in your readme! [(Image Source)](https://i.pinimg.com/originals/13/2a/2a/132a2a2bde126d0993b9ea77955cc673.jpg)
+
+
+
 ## Useful Links
 - [Implicit Procedural Planet Generation](https://static1.squarespace.com/static/58a1bc3c3e00be6bfe6c228c/t/58a4d25146c3c4233fb15cc2/1487196929690/ImplicitProceduralPlanetGeneration-Report.pdf)
 - [Curl Noise](https://petewerner.blogspot.com/2015/02/intro-to-curl-noise.html)
@@ -100,4 +118,5 @@ fourth dimension that is updated each frame. A 3D function will work, too, but
 the change in noise will look more "directional" than if you use 4D.
 - __(10 - 20 pts)__ Create your own mesh objects and procedurally place them
 in your environment according to terrain type, e.g. trees, buildings, animals.
+- __(10 - 20 pts)__ Cast a ray from your mouse and perform an action to modify the terrain (height or color), making your environment paintable.
 - __(? pts)__ Propose an extra feature of your own!
