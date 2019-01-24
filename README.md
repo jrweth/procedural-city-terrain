@@ -19,6 +19,9 @@ and updates a `vec2` in the plane shader representing a 2D position
 shader that does not apply a projection matrix to it, thus rendering it as the
 "background" of your scene
 
+When you run the program, you should see this scene:
+![](startScene.png)
+
 ## Assignment Requirements
 - __(75 points)__ Modify the provided terrain shader so that it incorporates various noise
 functions and noise function permutations to deform the surface and
