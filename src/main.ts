@@ -7,6 +7,7 @@ import OpenGLRenderer from './rendering/gl/OpenGLRenderer';
 import Camera from './Camera';
 import {setGL} from './globals';
 import ShaderProgram, {Shader} from './rendering/gl/ShaderProgram';
+import {Terrain} from "./generated-elements/terrain";
 
 // Define an object with application parameters and button callbacks
 // This will be referred to by dat.GUI's functions that add GUI elements.
@@ -15,6 +16,7 @@ const controls = {
   'Load Scene': loadScene, // A function pointer, essentially
 };
 
+let terrain: Terrain;
 let square: Square;
 let plane : Plane;
 let wPressed: boolean;
@@ -24,9 +26,13 @@ let dPressed: boolean;
 let planePos: vec2;
 
 function loadScene() {
+
+  terrain = new Terrain();
+  terrain.init();
+
   square = new Square(vec3.fromValues(0, 0, 0));
   square.create();
-  plane = new Plane(vec3.fromValues(0,0,0), vec2.fromValues(100,100), 20);
+  plane = new Plane(terrain);
   plane.create();
 
   wPressed = false;

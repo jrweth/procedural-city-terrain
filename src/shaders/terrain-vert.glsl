@@ -14,8 +14,6 @@ out vec3 fs_Pos;
 out vec4 fs_Nor;
 out vec4 fs_Col;
 
-out float fs_Sine;
-
 float random1( vec2 p , vec2 seed) {
   return fract(sin(dot(p + seed, vec2(127.1, 311.7))) * 43758.5453);
 }
@@ -31,8 +29,16 @@ vec2 random2( vec2 p , vec2 seed) {
 void main()
 {
   fs_Pos = vs_Pos.xyz;
-  fs_Sine = (sin((vs_Pos.x + u_PlanePos.x) * 3.14159 * 0.1) + cos((vs_Pos.z + u_PlanePos.y) * 3.14159 * 0.1));
-  vec4 modelposition = vec4(vs_Pos.x, fs_Sine * 2.0, vs_Pos.z, 1.0);
+  vec4 modelposition = vec4(vs_Pos.x, vs_Pos.y, vs_Pos.z, 1.0);
+  if(vs_Pos.y < 0.4) {
+     modelposition.y = 0.0;
+  }
+  else if(vs_Pos.y < 0.5) {
+     modelposition.y = (0.1 - (0.5 - vs_Pos.y))* 3.0;
+  }
+  else {
+     modelposition.y = 3.0;
+  }
   modelposition = u_Model * modelposition;
   gl_Position = u_ViewProj * modelposition;
 }

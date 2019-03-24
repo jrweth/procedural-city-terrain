@@ -1,58 +1,30 @@
 import {vec2, vec3, vec4} from 'gl-matrix';
 import Drawable from '../rendering/gl/Drawable';
 import {gl} from '../globals';
+import Noise from "../noise/noise";
+import {Terrain} from "../generated-elements/terrain";
 
 class Plane extends Drawable {
+  seed: vec2 = vec2.fromValues(342.3423, 984.843);
   indices: Uint32Array;
   positions: Float32Array;
   normals: Float32Array;
-  center: vec3;
   scale: vec2;
+  gridSize: vec2;
   subdivs: number; // 2^subdivs is how many squares will compose the plane; must be even.
+  terrain: Terrain;
 
-  constructor(center: vec3, scale: vec2, subdivs: number) {
+  constructor(terrain: Terrain) {
     super(); // Call the constructor of the super class. This is required.
-    this.center = vec3.fromValues(center[0], center[1], center[2]);
-    this.scale = scale;
-    this.subdivs = subdivs + subdivs % 2; // Ensures the number is even, rounds up.
+    this.scale = vec2.fromValues(100, 100);
+    this.gridSize = terrain.gridSize;
+    this.subdivs =20;
+    this.terrain = terrain;
   }
 
   create() {
 
-    let width: number = Math.pow(2, this.subdivs / 2);
-    let normalize: number = 1.0 / width;
-    this.positions = new Float32Array((width + 1) * (width + 1) * 4);
-    this.normals = new Float32Array((width + 1) * (width + 1) * 4);
-    this.indices = new Uint32Array(width * width * 6); // NxN squares, each square is two triangles, each triangle is three indices
-
-    let posIdx = 0;
-    for(let x = 0; x <= width; ++x) {
-      for(let z = 0; z <= width; ++z) {
-        // Make a strip of vertices along Z with the current X coord
-        this.normals[posIdx] = 0;
-        this.positions[posIdx++] = x * normalize * this.scale[0] + this.center[0] - this.scale[0] * 0.5;
-        this.normals[posIdx] = 1;
-        this.positions[posIdx++] = 0 + this.center[1];
-        this.normals[posIdx] = 0;
-        this.positions[posIdx++] = z * normalize * this.scale[1] + this.center[2] - this.scale[1] * 0.5;
-        this.normals[posIdx] = 0;
-        this.positions[posIdx++] = 1;
-      }
-    }
-
-    let indexIdx = 0;
-    // Make the squares out of indices
-    for(let i = 0; i < width; ++i) { // X iter
-      for(let j = 0; j < width; ++j) { // Z iter
-        this.indices[indexIdx++] = j + i * (width + 1);
-        this.indices[indexIdx++] = j + 1 + i * (width + 1);
-        this.indices[indexIdx++] = j + (i + 1) * (width + 1);
-
-        this.indices[indexIdx++] = j + 1 + i * (width + 1);
-        this.indices[indexIdx++] = j + (i + 1) * (width + 1);
-        this.indices[indexIdx++] = j + 1 + (i + 1) * (width + 1);
-      }
-    }
+    this.initGrid(12.3);
 
     this.generateIdx();
     this.generatePos();
@@ -70,6 +42,63 @@ class Plane extends Drawable {
 
     console.log(`Created plane`);
   }
+
+
+  initGrid(seed: number) {
+    let numPoints = (this.gridSize[1] + 1) * (this.gridSize[1] + 1);
+    let numGridSquares = this.gridSize[0] * this.gridSize[1];
+    let normalizeX: number = 1.0 / this.gridSize[0];
+    let normalizeY: number = 1.0 / this.gridSize[1];
+
+    this.positions = new Float32Array(numPoints * 4);
+    this.normals = new Float32Array(numPoints * 4);
+    this.indices = new Uint32Array(numGridSquares * 6); // NxN squares, each square is two triangles, each triangle is three indices
+
+    let posIdx = 0;
+    for(let x = 0; x <= this.gridSize[0]; ++x) {
+      for(let z = 0; z <= this.gridSize[1]; ++z) {
+
+        // Make a strip of vertices along Z with the current X coord
+        this.normals  [posIdx] = 0;
+        this.positions[posIdx++] = x * normalizeX * this.scale[0]  - this.scale[0] * 0.5;
+        this.normals[posIdx] = 1;
+        this.positions[posIdx++] = this.terrain.elevations[x][z];
+        this.normals[posIdx] = 0;
+        this.positions[posIdx++] = z * normalizeY* this.scale[1]  - this.scale[1] * 0.5;
+        this.normals[posIdx] = 0;
+        this.positions[posIdx++] = 1;
+      }
+    }
+
+    let indexIdx = 0;
+    // Make the squares out of indices
+    for(let i = 0; i < this.gridSize[0]; ++i) { // X iter
+      for(let j = 0; j < this.gridSize[1]; ++j) { // Z iter
+        this.indices[indexIdx++] = j + i * (this.gridSize[1] + 1);
+        this.indices[indexIdx++] = j + 1 + i * (this.gridSize[1] + 1);
+        this.indices[indexIdx++] = j + (i + 1) * (this.gridSize[1] + 1);
+
+        this.indices[indexIdx++] = j + 1 + i * (this.gridSize[1]+ 1);
+        this.indices[indexIdx++] = j + (i + 1) * (this.gridSize[1] + 1);
+        this.indices[indexIdx++] = j + 1 + (i + 1) * (this.gridSize[1] + 1);
+      }
+    }
+
+  }
+
+  setSeedFromNum(seed: number) {
+    this.seed = vec2.fromValues(seed, seed + 8.33398);
+  }
+
+  gridPosToScreenPos(pos: vec3) {
+    let screenPos: vec3 = vec3.create();
+    let normalizeX = 1 / this.gridSize[0];
+    screenPos[0] = pos[0]
+    return screenPos;
+
+  }
+
+
 };
 
 export default Plane;
