@@ -30,14 +30,17 @@ void main()
 {
   fs_Pos = vs_Pos.xyz;
   vec4 modelposition = vec4(vs_Pos.x, vs_Pos.y, vs_Pos.z, 1.0);
+  //water
   if(vs_Pos.y < 0.4) {
      modelposition.y = 0.0;
   }
+  //sand
   else if(vs_Pos.y < 0.5) {
-     modelposition.y = (0.1 - (0.5 - vs_Pos.y))* 3.0;
+     modelposition.y = vs_Pos.y;
   }
+  //land
   else {
-     modelposition.y = 3.0;
+     modelposition.y = 0.5;
   }
   modelposition = u_Model * modelposition;
   gl_Position = u_ViewProj * modelposition;
