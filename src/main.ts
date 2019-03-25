@@ -41,7 +41,11 @@ function loadScene() {
   roads = new Roads(1, {seed: 1.234, terrain: terrain});
   roads.runExpansionIterations(1);
   roads.runDrawRules();
-  roadSegments = new RoadSegments();
+  roadSegments = new RoadSegments({
+    gridSize: terrain.gridSize,
+    scale: plane.scale}
+  );
+  roadSegments.create();
   roadSegments.setInstanceVBOs(roads.segments, roads.intersections);
 
   square = new Square(vec3.fromValues(0, 0, 0));
@@ -120,9 +124,14 @@ function main() {
   renderer.setClearColor(164.0 / 255.0, 233.0 / 255.0, 1.0, 1);
   gl.enable(gl.DEPTH_TEST);
 
-  const lambert = new ShaderProgram([
+  const terrainShader = new ShaderProgram([
     new Shader(gl.VERTEX_SHADER, require('./shaders/terrain-vert.glsl')),
     new Shader(gl.FRAGMENT_SHADER, require('./shaders/terrain-frag.glsl')),
+  ]);
+
+  const roadShader = new ShaderProgram([
+    new Shader(gl.VERTEX_SHADER, require('./shaders/roads-vert.glsl')),
+    new Shader(gl.FRAGMENT_SHADER, require('./shaders/roads-frag.glsl')),
   ]);
 
   const flat = new ShaderProgram([
@@ -146,7 +155,8 @@ function main() {
     }
     let newPos: vec2 = vec2.fromValues(0,0);
     vec2.add(newPos, velocity, planePos);
-    lambert.setPlanePos(newPos);
+    terrainShader.setPlanePos(newPos);
+    roadShader.setPlanePos(newPos);
     planePos = newPos;
   }
 
@@ -157,9 +167,12 @@ function main() {
     gl.viewport(0, 0, window.innerWidth, window.innerHeight);
     renderer.clear();
     processKeyPresses();
-    renderer.render(camera, lambert, [
-      plane,
+    renderer.render(camera, terrainShader, [
+      plane
     ]);
+    renderer.render(camera, roadShader,
+      [roadSegments]
+    );
     renderer.render(camera, flat, [
       square,
     ]);
@@ -180,6 +193,7 @@ function main() {
   camera.updateProjectionMatrix();
 
   // Start the render loop
+  console.log(roadSegments);
   tick();
 }
 

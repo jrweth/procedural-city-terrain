@@ -11,6 +11,7 @@ import {Constraint} from "./constraint/constraint";
 import {WaterConstraint} from "./constraint/water-constraint";
 import {EdgeOfMapConstraint} from "./constraint/edge-of-map-constraint";
 import {Terrain} from "../terrain";
+import {start} from "repl";
 
 class RoadGridSection {
   xIndex: number;
@@ -55,11 +56,25 @@ class Roads extends LSystem {
     this.addXRule('L', new XReplace('A[--L]A[++L]A[--L]A[++L]AA[--L]A[++L]A'));
 
     //
-    this.addConstraint(new WaterConstraint({terrain: this.terrain, roads: this}));
-    this.addConstraint(new EdgeOfMapConstraint({roads: this}));
+    //this.addConstraint(new WaterConstraint({terrain: this.terrain, roads: this}));
+    //this.addConstraint(new EdgeOfMapConstraint({roads: this}));
 
     this.turtle.roadType = RoadType.HIGHWAY;
+    let startIntersection = new Intersection();
+    startIntersection.pos = this.getRoadStartingPos();
+    startIntersection.segmentIds = [];
+    this.addIntersection(startIntersection);
+    this.turtle.lastIntersectionId = 0;
+    this.turtle.pos = startIntersection.pos;
 
+
+  }
+
+  getRoadStartingPos(): vec2 {
+    let startPos: vec2 = vec2.create();
+    startPos[0] = this.terrain.gridSize[0] / 2;
+    startPos[1] = this.terrain.gridSize[1] / 2;
+    return startPos;
   }
 
   addConstraint(constraint: Constraint) {

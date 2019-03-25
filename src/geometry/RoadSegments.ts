@@ -9,14 +9,18 @@ class RoadSegments extends Drawable {
   positions: Float32Array;
   offsets: Float32Array; // Data for bufTranslate
   colors: Float32Array; // Data for bufTranslate
+  scale: vec2; //how far to scale the grid
+  gridSize: vec2; //the size of the grid (number of squares)
 
 
-  constructor() {
+
+  constructor(options: {scale: vec2, gridSize: vec2}) {
     super(); // Call the constructor of the super class. This is required.
+    this.scale = options.scale;
+    this.gridSize = options.gridSize;
   }
 
   create() {
-
 
     this.indices = new Uint32Array([0, 1, 2,
       1, 3, 2]);
@@ -27,8 +31,6 @@ class RoadSegments extends Drawable {
 
     this.generateIdx();
     this.generatePos();
-    //this.generateTranslate();
-    //this.generateCol();
 
     this.count = this.indices.length;
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.bufIdx);
@@ -37,9 +39,21 @@ class RoadSegments extends Drawable {
     gl.bindBuffer(gl.ARRAY_BUFFER, this.bufPos);
     gl.bufferData(gl.ARRAY_BUFFER, this.positions, gl.STATIC_DRAW);
 
+    console.log(this.positions);
+
+  }
+
+  gridPosToScreenPos(gridPos: vec2) {
+    let screenPos: vec2 = vec2.create();
+    screenPos[0] = gridPos[0] * this.scale[0] / this.gridSize[0] - this.scale[0] * 0.5;
+    screenPos[1] = gridPos[1] * this.scale[1] / this.gridSize[1] - this.scale[1] * 0.5;
+    return screenPos;
   }
 
   setInstanceVBOs(segments: Segment[], intersections: Intersection[]) {
+    this.generateTranslate();
+    this.generateCol();
+
     let offsets: number[] = [];
     let colors: number[] = [];
     let width: number;
@@ -49,7 +63,10 @@ class RoadSegments extends Drawable {
     for(let i = 0; i < segments.length; i++) {
       let startPos: vec2 = intersections[segments[i].startIntersectionId].pos;
       let endPos: vec2 = intersections[segments[i].endIntersectionId].pos;
-      offsets.push(startPos[0], startPos[1], 0);
+      let startPosScreen = this.gridPosToScreenPos(startPos);
+      let endPosScreen = this.gridPosToScreenPos(startPos);
+
+      offsets.push(startPosScreen[0], 0, startPosScreen[1], 0);
 
       switch(segments[i].roadType) {
         case RoadType.HIGHWAY: width = 0.01; break
@@ -65,8 +82,9 @@ class RoadSegments extends Drawable {
     // gl.bindBuffer(gl.ARRAY_BUFFER, this.bufTranslate);
     // gl.bufferData(gl.ARRAY_BUFFER, this.offsets, gl.STATIC_DRAW);
     //
-    // gl.bindBuffer(gl.ARRAY_BUFFER, this.bufCol);
-    // gl.bufferData(gl.ARRAY_BUFFER, this.colors, gl.STATIC_DRAW);
+    //gl.bindBuffer(gl.ARRAY_BUFFER, this.bufCol);
+    //gl.bufferData(gl.ARRAY_BUFFER, this.colors, gl.STATIC_DRAW);
+
   }
 };
 

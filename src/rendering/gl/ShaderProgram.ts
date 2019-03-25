@@ -24,6 +24,7 @@ class ShaderProgram {
   attrPos: number;
   attrNor: number;
   attrCol: number;
+  attrTranslate: number;
 
   unifModel: WebGLUniformLocation;
   unifModelInvTr: WebGLUniformLocation;
@@ -42,9 +43,11 @@ class ShaderProgram {
       throw gl.getProgramInfoLog(this.prog);
     }
 
-    this.attrPos = gl.getAttribLocation(this.prog, "vs_Pos");
-    this.attrNor = gl.getAttribLocation(this.prog, "vs_Nor");
-    this.attrCol = gl.getAttribLocation(this.prog, "vs_Col");
+    this.attrPos        = gl.getAttribLocation(this.prog, "vs_Pos");
+    this.attrNor        = gl.getAttribLocation(this.prog, "vs_Nor");
+    this.attrCol        = gl.getAttribLocation(this.prog, "vs_Col");
+    this.attrTranslate  = gl.getAttribLocation(this.prog, "vs_Translate");
+
     this.unifModel      = gl.getUniformLocation(this.prog, "u_Model");
     this.unifModelInvTr = gl.getUniformLocation(this.prog, "u_ModelInvTr");
     this.unifViewProj   = gl.getUniformLocation(this.prog, "u_ViewProj");
@@ -99,6 +102,18 @@ class ShaderProgram {
       gl.enableVertexAttribArray(this.attrNor);
       gl.vertexAttribPointer(this.attrNor, 4, gl.FLOAT, false, 0, 0);
       gl.vertexAttribDivisor(this.attrNor, 0);
+    }
+
+    if (this.attrCol != -1 && d.bindCol()) {
+      gl.enableVertexAttribArray(this.attrCol);
+      gl.vertexAttribPointer(this.attrCol, 4, gl.FLOAT, false, 0, 0);
+      gl.vertexAttribDivisor(this.attrCol, 1);
+    }
+
+    if (this.attrTranslate != -1 && d.bindTranslate()) {
+      gl.enableVertexAttribArray(this.attrTranslate);
+      gl.vertexAttribPointer(this.attrTranslate, 4, gl.FLOAT, false, 0, 0);
+      gl.vertexAttribDivisor(this.attrTranslate, 1);
     }
 
     d.bindIdx();

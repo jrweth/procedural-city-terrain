@@ -1,23 +1,45 @@
 import {gl} from '../../globals';
 
+// enum BufferType {
+//   ELEMENT_ARRAY_BUFFER = 'ELEMENT_ARRAY_BUFFER',
+//   ARRAY_BUFFER = 'ARRAY_BUFFER'
+// }
+//
+// class Buffer {
+//   buffer: WebGLBuffer;
+//   bufferType: BufferType;
+// }
+
+
 abstract class Drawable {
   count: number = 0;
   numInstances: number = 1;
 
+  //buffers: {[buffName: string]: Buffer};
+
   bufIdx: WebGLBuffer;
   bufPos: WebGLBuffer;
   bufNor: WebGLBuffer;
+  bufCol: WebGLBuffer;
+  bufTranslate: WebGLBuffer;
 
   idxBound: boolean = false;
   posBound: boolean = false;
   norBound: boolean = false;
+  colBound: boolean = false;
+  translateBound: boolean = false;
 
   abstract create() : void;
+
+  setNumInstances(num: number) {
+    this.numInstances = num;
+  }
 
   destory() {
     gl.deleteBuffer(this.bufIdx);
     gl.deleteBuffer(this.bufPos);
     gl.deleteBuffer(this.bufNor);
+    gl.deleteBuffer(this.bufCol);
   }
 
   generateIdx() {
@@ -33,6 +55,16 @@ abstract class Drawable {
   generateNor() {
     this.norBound = true;
     this.bufNor = gl.createBuffer();
+  }
+
+  generateCol() {
+    this.colBound = true;
+    this.bufCol = gl.createBuffer();
+  }
+
+  generateTranslate() {
+    this.translateBound = true;
+    this.bufTranslate = gl.createBuffer();
   }
 
   bindIdx(): boolean {
@@ -56,6 +88,20 @@ abstract class Drawable {
     return this.norBound;
   }
 
+  bindCol(): boolean {
+    if (this.colBound) {
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.bufCol);
+    }
+    return this.norBound;
+  }
+
+  bindTranslate(): boolean {
+    if (this.translateBound) {
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.bufTranslate);
+    }
+    return this.translateBound;
+  }
+
   elemCount(): number {
     return this.count;
   }
@@ -63,6 +109,36 @@ abstract class Drawable {
   drawMode(): GLenum {
     return gl.TRIANGLES;
   }
+
+
+
+  //starting the process of abstracting this out since it is a huge pain to do each one individually
+  // bufferExists(buffName: string) {
+  //   return this.buffers.hasOwnProperty(buffName);
+  // }
+  //
+  // generate(buffName: string, bufferType: BufferType) {
+  //   if(!this.bufferExists(buffName)) {
+  //     this.buffers[buffName] = {
+  //       buffer: gl.createBuffer(),
+  //       bufferType: bufferType
+  //     }
+  //   }
+  // }
+  //
+  // bind(buffName: string, bufferType: BufferType | null): boolean {
+  //   if(!this.bufferExists(buffName)) {
+  //     this.generate(buffName, bufferType);
+  //   }
+  //   if(this.buffers[buffName].bufferType == BufferType.ARRAY_BUFFER) {
+  //     gl.bindBuffer(gl.ARRAY_BUFFER, this.buffers[buffName].buffer);
+  //   }
+  //   else if(this.buffers[buffName].bufferType == BufferType.ELEMENT_ARRAY_BUFFER) {
+  //     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.buffers[buffName].buffer);
+  //   }
+  //
+  //   return true;
+  // }
 };
 
 export default Drawable;
