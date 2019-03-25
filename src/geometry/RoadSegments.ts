@@ -70,15 +70,16 @@ class RoadSegments extends Drawable {
       offsets.push(startPosScreen[0], 0, startPosScreen[1], 0);
 
       switch(segments[i].roadType) {
-        case RoadType.HIGHWAY: width = 0.01; break
-        case RoadType.STREET:    width = 0.005; break
+        case RoadType.HIGHWAY: width = 1; break
+        case RoadType.STREET:    width = 0.5; break
       }
       length = vec2.dist(startPosScreen, endPosScreen);
-      colors.push(length * this.scale[0], width * this.scale[1], segments[i].rotation, 0);
+      colors.push(length, width, segments[i].rotation, 0);
     }
 
     this.offsets = new Float32Array(offsets);
     this.colors = new Float32Array(colors);
+    console.log(this.offsets);
     console.log(this.colors);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.bufTranslate);
