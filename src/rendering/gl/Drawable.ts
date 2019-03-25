@@ -2,6 +2,7 @@ import {gl} from '../../globals';
 
 abstract class Drawable {
   count: number = 0;
+  numInstances: number = 1;
 
   bufIdx: WebGLBuffer;
   bufPos: WebGLBuffer;

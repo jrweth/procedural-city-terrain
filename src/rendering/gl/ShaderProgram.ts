@@ -92,15 +92,17 @@ class ShaderProgram {
     if (this.attrPos != -1 && d.bindPos()) {
       gl.enableVertexAttribArray(this.attrPos);
       gl.vertexAttribPointer(this.attrPos, 4, gl.FLOAT, false, 0, 0);
+      gl.vertexAttribDivisor(this.attrPos, 0);
     }
 
     if (this.attrNor != -1 && d.bindNor()) {
       gl.enableVertexAttribArray(this.attrNor);
       gl.vertexAttribPointer(this.attrNor, 4, gl.FLOAT, false, 0, 0);
+      gl.vertexAttribDivisor(this.attrNor, 0);
     }
 
     d.bindIdx();
-    gl.drawElements(d.drawMode(), d.elemCount(), gl.UNSIGNED_INT, 0);
+    gl.drawElementsInstanced(d.drawMode(), d.elemCount(), gl.UNSIGNED_INT, 0, d.numInstances);
 
     if (this.attrPos != -1) gl.disableVertexAttribArray(this.attrPos);
     if (this.attrNor != -1) gl.disableVertexAttribArray(this.attrNor);

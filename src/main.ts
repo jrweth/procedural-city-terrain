@@ -2,12 +2,14 @@ import {vec2, vec3} from 'gl-matrix';
 import * as Stats from 'stats-js';
 import * as DAT from 'dat-gui';
 import Square from './geometry/Square';
-import Plane from './geometry/Plane';
+import TerrainPlane from './geometry/TerrainPlane';
 import OpenGLRenderer from './rendering/gl/OpenGLRenderer';
 import Camera from './Camera';
 import {setGL} from './globals';
 import ShaderProgram, {Shader} from './rendering/gl/ShaderProgram';
 import {Terrain} from "./generated-elements/terrain";
+import Roads from "./generated-elements/road/roads";
+import RoadSegments from "./geometry/RoadSegments";
 
 // Define an object with application parameters and button callbacks
 // This will be referred to by dat.GUI's functions that add GUI elements.
@@ -17,8 +19,10 @@ const controls = {
 };
 
 let terrain: Terrain;
+let roads: Roads;
 let square: Square;
-let plane : Plane;
+let plane : TerrainPlane;
+let roadSegments: RoadSegments;
 let wPressed: boolean;
 let aPressed: boolean;
 let sPressed: boolean;
@@ -32,7 +36,7 @@ function loadScene() {
 
   square = new Square(vec3.fromValues(0, 0, 0));
   square.create();
-  plane = new Plane(terrain);
+  plane = new TerrainPlane(terrain);
   plane.create();
 
   wPressed = false;

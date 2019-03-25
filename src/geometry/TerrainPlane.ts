@@ -4,7 +4,7 @@ import {gl} from '../globals';
 import Noise from "../noise/noise";
 import {Terrain} from "../generated-elements/terrain";
 
-class Plane extends Drawable {
+class TerrainPlane extends Drawable {
   seed: vec2 = vec2.fromValues(342.3423, 984.843);
   indices: Uint32Array;
   positions: Float32Array;
@@ -24,7 +24,7 @@ class Plane extends Drawable {
 
   create() {
 
-    this.initGrid(12.3);
+    this.initGrid();
 
     this.generateIdx();
     this.generatePos();
@@ -44,7 +44,7 @@ class Plane extends Drawable {
   }
 
 
-  initGrid(seed: number) {
+  initGrid() {
     let numPoints = (this.gridSize[1] + 1) * (this.gridSize[1] + 1);
     let numGridSquares = this.gridSize[0] * this.gridSize[1];
     let normalizeX: number = 1.0 / this.gridSize[0];
@@ -101,4 +101,4 @@ class Plane extends Drawable {
 
 };
 
-export default Plane;
+export default TerrainPlane;

@@ -19,6 +19,10 @@ export class Terrain {
   //the elevation lower than which terrain is water
   waterLevel = 0.4;
 
+  landLevel = 0.43;
+
+  numPopulationPoints: vec2 = vec2.fromValues(3, 4);
+
   //2 dimensional array representing the height at the [x][z] coordinate can be from 0 to 1
   elevations: number[][];
 
@@ -29,6 +33,7 @@ export class Terrain {
     this.initElevations();
     this.initNormals();
   }
+
 
   /**
    * Initialize the elevation grid
@@ -83,6 +88,19 @@ export class Terrain {
         this.normals[x].push(normal);
       }
     }
+  }
+
+
+  positionOnWater(pos: vec2): boolean {
+    return false;
+  }
+
+  positionOnLand(pos: vec2): boolean {
+    return true;
+  }
+
+  getPopulationDensity(pos: vec2) {
+    return 1;
   }
 
 }
