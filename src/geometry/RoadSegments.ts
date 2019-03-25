@@ -24,10 +24,11 @@ class RoadSegments extends Drawable {
 
     this.indices = new Uint32Array([0, 1, 2,
       1, 3, 2]);
-    this.positions = new Float32Array([0, -0.5, -0.001, 1,
-      0, 0.5, -0.001, 1,
-      1, -0.5, -0.001, 1,
-      1, 0.5, -0.001, 1]);
+    this.positions = new Float32Array([
+      0, 0.6, -0.5, 1,
+      0, 0.6, 0.5,  1,
+      1, 0.6, -0.5, 1,
+      1, 0.6, 0.5,  1]);
 
     this.generateIdx();
     this.generatePos();
@@ -64,7 +65,7 @@ class RoadSegments extends Drawable {
       let startPos: vec2 = intersections[segments[i].startIntersectionId].pos;
       let endPos: vec2 = intersections[segments[i].endIntersectionId].pos;
       let startPosScreen = this.gridPosToScreenPos(startPos);
-      let endPosScreen = this.gridPosToScreenPos(startPos);
+      let endPosScreen = this.gridPosToScreenPos(endPos);
 
       offsets.push(startPosScreen[0], 0, startPosScreen[1], 0);
 
@@ -72,18 +73,19 @@ class RoadSegments extends Drawable {
         case RoadType.HIGHWAY: width = 0.01; break
         case RoadType.STREET:    width = 0.005; break
       }
-      length = vec2.dist(startPos, endPos);
-      colors.push(length, width, segments[i].rotation, 0);
+      length = vec2.dist(startPosScreen, endPosScreen);
+      colors.push(length * this.scale[0], width * this.scale[1], segments[i].rotation, 0);
     }
 
     this.offsets = new Float32Array(offsets);
     this.colors = new Float32Array(colors);
+    console.log(this.colors);
 
-    // gl.bindBuffer(gl.ARRAY_BUFFER, this.bufTranslate);
-    // gl.bufferData(gl.ARRAY_BUFFER, this.offsets, gl.STATIC_DRAW);
-    //
-    //gl.bindBuffer(gl.ARRAY_BUFFER, this.bufCol);
-    //gl.bufferData(gl.ARRAY_BUFFER, this.colors, gl.STATIC_DRAW);
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.bufTranslate);
+    gl.bufferData(gl.ARRAY_BUFFER, this.offsets, gl.STATIC_DRAW);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.bufCol);
+    gl.bufferData(gl.ARRAY_BUFFER, this.colors, gl.STATIC_DRAW);
 
   }
 };

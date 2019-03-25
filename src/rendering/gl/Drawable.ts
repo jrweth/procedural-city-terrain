@@ -92,7 +92,7 @@ abstract class Drawable {
     if (this.colBound) {
       gl.bindBuffer(gl.ARRAY_BUFFER, this.bufCol);
     }
-    return this.norBound;
+    return this.colBound;
   }
 
   bindTranslate(): boolean {

@@ -29,20 +29,22 @@ vec2 random2( vec2 p , vec2 seed) {
 
 void main()
 {
-  fs_Pos = vs_Pos.xyz;
-  vec4 modelposition = vec4(vs_Pos.x, vs_Pos.y, vs_Pos.z, 1.0);
-  //water
-//  if(vs_Pos.y < 0.4) {
-//     modelposition.y = 0.0;
-//  }
-//  //sand
-//  else if(vs_Pos.y < 0.5) {
-//     modelposition.y = vs_Pos.y;
-//  }
-//  //land
-//  else {
-//     modelposition.y = 0.5;
-//  }
-  modelposition = u_Model * modelposition;
-  gl_Position = u_ViewProj * modelposition;
+    fs_Pos = vs_Pos.xyz;
+    vec4 modelposition = vec4(vs_Pos.x, vs_Pos.y, vs_Pos.z, 1.0);
+   //scale by width and height
+    modelposition.x = modelposition.x * vs_Col.x; //vs_Col.x = length
+    modelposition.y = modelposition.y * vs_Col.y; //vs_Col.y = width;
+
+    //fs_Pos.y = vs_Pos.y * vs_Col.y;
+
+    //rotate
+    float s = sin(vs_Col.z);
+    float c = cos(vs_Col.z);
+    modelposition.xz = mat2(c, s, -s, c) * modelposition.xz;
+
+    //translate
+    modelposition.xyz += vs_Translate.xyz;
+
+    modelposition = u_Model * modelposition;
+    gl_Position = u_ViewProj * modelposition;
 }

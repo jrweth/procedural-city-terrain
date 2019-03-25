@@ -66,6 +66,7 @@ class Roads extends LSystem {
     this.addIntersection(startIntersection);
     this.turtle.lastIntersectionId = 0;
     this.turtle.pos = startIntersection.pos;
+    this.turtle.dir = Math.PI / 4;
 
 
   }
