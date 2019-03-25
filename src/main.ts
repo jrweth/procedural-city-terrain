@@ -31,13 +31,21 @@ let planePos: vec2;
 
 function loadScene() {
 
+  //initialize terrain
   terrain = new Terrain();
   terrain.init();
+  plane = new TerrainPlane(terrain);
+  plane.create();
+
+  //initialize roads
+  roads = new Roads(1, {seed: 1.234, terrain: terrain});
+  roads.runExpansionIterations(1);
+  roads.runDrawRules();
+  roadSegments = new RoadSegments();
+  roadSegments.setInstanceVBOs(roads.segments, roads.intersections);
 
   square = new Square(vec3.fromValues(0, 0, 0));
   square.create();
-  plane = new TerrainPlane(terrain);
-  plane.create();
 
   wPressed = false;
   aPressed = false;

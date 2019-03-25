@@ -27,7 +27,7 @@ class Roads extends LSystem {
     seed: number,
     terrain: Terrain
   }) {
-    super(iterations, options);
+    super(options);
     this.terrain = options.terrain;
     this.initRoadSections();
 
@@ -91,8 +91,7 @@ class Roads extends LSystem {
     console.log(this.segments);
     this.axiom = 'FXFFXFXFFX';
     this.addXRule('X', new XReplace('[-FX][FX][+FX]'));
-    this.iterations = 5;
-    this.runExpansionIterations();
+    this.runExpansionIterations(5);
 
     let numInt = this.intersections.length;
     let numNeighborhoods = 1000;

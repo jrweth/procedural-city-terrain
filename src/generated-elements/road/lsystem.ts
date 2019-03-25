@@ -45,9 +45,6 @@ export class LSystem {
   //the current number of interations
   curIteration: number;
 
-  //the total number of iterations desired
-  iterations: number;
-
   //the set of expansion rules
   xRules : Map<string, XRule> = new Map();
 
@@ -66,8 +63,7 @@ export class LSystem {
   curString: string;
 
   //initialize with the options
-  constructor(iterations: number, options: any) {
-    this.iterations = iterations;
+  constructor(options: any) {
     this.options = options;
     this.curIteration = 0;
 
@@ -105,9 +101,9 @@ export class LSystem {
     this.curIteration++;
   }
 
-  runExpansionIterations() {
+  runExpansionIterations(iterations: number) {
     this.curString = this.axiom;
-    for(let i:number = 0; i < this.iterations; i++) {
+    for(let i:number = 0; i < iterations; i++) {
       this.iterate(i);
     }
   }
