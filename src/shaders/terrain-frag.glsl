@@ -20,7 +20,7 @@ void main()
     if(fs_Pos.y <= 0.4) {
         groundColor = vec3(0.0, 0.0, 1.0);
     }
-    else if(fs_Pos.y < 0.42) {
+    else if(fs_Pos.y < 0.43) {
         groundColor = vec3(1.0, 1.0, 0.0);
     }
     out_Col = vec4(mix(groundColor, vec3(164.0 / 255.0, 233.0 / 255.0, 1.0), t), 1.0);

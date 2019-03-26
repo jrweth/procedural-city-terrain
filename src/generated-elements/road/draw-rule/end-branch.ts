@@ -8,6 +8,7 @@ export class EndBranch extends BaseDrawRule implements DrawRule {
     if(turtleStack.length > 0) {
       turtle = turtleStack.pop();
     }
+    turtle.branchEnded = false;
     return turtle;
   }
 }

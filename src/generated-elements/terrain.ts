@@ -12,7 +12,7 @@ export enum TerrainType {
  */
 export class Terrain {
   //the size of the grid (i.e number of squares in our grid representing the terrain).
-  gridSize: vec2 = vec2.fromValues(1000, 1000);
+  gridSize: vec2 = vec2.fromValues(500, 500);
 
   //the seed to generate the random elevation generation
   elevationSeed: vec2 = vec2.fromValues(122.323, 897.9855);
@@ -49,7 +49,7 @@ export class Terrain {
     for(let x = 0; x <= this.gridSize[0]; x++) {
       this.elevations.push([]);
       for(let z = 0; z <= this.gridSize[1]; z++) {
-        let y = Noise.fbm2to1(vec2.fromValues(x/ 100, z/100), this.elevationSeed);
+        let y = Noise.fbm2to1(vec2.fromValues(x * 5 / this.gridSize[0], z * 5/ this.gridSize[1]), this.elevationSeed);
         this.elevations[x].push(y);
       }
     }

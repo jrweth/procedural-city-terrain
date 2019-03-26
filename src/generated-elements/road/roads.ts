@@ -54,7 +54,7 @@ class Roads extends LSystem {
 
     this.addDrawRule('[', new StartBranch({terrain: this.terrain}));
 
-    this.addXRule('A', new XReplace('FPFPFPFPFPFjjjPFPFPFPFPF'));
+    this.addXRule('A', new XReplace('FPFPFPFPFPFPF'));
     this.addXRule('L', new XReplace('A[--L]A[++L]A[--L]A[++L]AA[--L]A[++L]A'));
 
     this.initStartingPos();
@@ -91,7 +91,6 @@ class Roads extends LSystem {
     }
     //startPos[0] = this.terrain.gridSize[0] / 2;
     //startPos[1] = this.terrain.gridSize[1] / 2;
-    return vec2.fromValues(500, 500);
     return startPos;
   }
 
