@@ -14,6 +14,7 @@ in vec4 vs_Translate;
 out vec3 fs_Pos;
 out vec4 fs_Nor;
 out vec4 fs_Col;
+out vec4 fs_Translate;
 
 float random1( vec2 p , vec2 seed) {
   return fract(sin(dot(p + seed, vec2(127.1, 311.7))) * 43758.5453);
@@ -30,6 +31,7 @@ vec2 random2( vec2 p , vec2 seed) {
 void main()
 {
     fs_Pos = vs_Pos.xyz;
+    fs_Translate = vs_Translate;
     vec4 modelposition = vec4(vs_Pos.x, 0.7, vs_Pos.z, 1.0);
    //scale by width and height
     modelposition.x = modelposition.x * vs_Col.x; //vs_Col.x = length

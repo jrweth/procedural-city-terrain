@@ -3,7 +3,8 @@ import Noise from "../noise/noise";
 
 export enum TerrainType {
   WATER = 0,
-  LAND = 1
+  LAND = 1,
+  COAST = 2
 }
 
 /**
@@ -16,11 +17,14 @@ export class Terrain {
   //the seed to generate the random elevation generation
   elevationSeed: vec2 = vec2.fromValues(122.323, 897.9855);
 
+  populationSeed: vec2 = vec2.fromValues(97.9676, 85.959);
+
   //the elevation lower than which terrain is water
   waterLevel = 0.4;
 
   landLevel = 0.43;
 
+  populationPoints: vec2[];
   numPopulationPoints: vec2 = vec2.fromValues(3, 4);
 
   //2 dimensional array representing the height at the [x][z] coordinate can be from 0 to 1
@@ -32,6 +36,8 @@ export class Terrain {
   init() {
     this.initElevations();
     this.initNormals();
+    this.initPopulation();
+
   }
 
 
@@ -90,17 +96,84 @@ export class Terrain {
     }
   }
 
-
-  positionOnWater(pos: vec2): boolean {
-    return false;
+  initPopulation() {
+      this.populationPoints = Noise.generateWorleyPoints2d(this.numPopulationPoints, this.populationSeed);
+      console.log(this.populationPoints);
   }
 
-  positionOnLand(pos: vec2): boolean {
-    return true;
+  gridPosToWorlyPos(gridPos: vec2): vec2 {
+    let worleyX: number = gridPos[0] * this.numPopulationPoints[0] / this.gridSize[0];
+    let worleyY: number = gridPos[1] * this.numPopulationPoints[1] / this.gridSize[1];
+    let worleyPos: vec2 = vec2.fromValues(worleyX, worleyY);
+    return worleyPos;
   }
 
-  getPopulationDensity(pos: vec2) {
-    return 1;
+  /**
+   * Get the population density at a particular gridPosition
+   * @param gridPos
+   */
+  getPopulationDensity(gridPos: vec2): number {
+    console.log('here');
+    if(!this.positionOnLand(gridPos)) return 0;
+    let worleyPos: vec2 = this.gridPosToWorlyPos(gridPos);
+    let closestPopPoint = Noise.getClosestWorleyPoint2d(worleyPos, this.numPopulationPoints, this.populationPoints);
+    if(closestPopPoint) {
+      return Math.pow((1-vec2.dist(worleyPos, closestPopPoint))/1.414, 3);
+    }
+    return 0;
   }
+
+  /**
+   * Get the elevation at a particular position
+   * @param gridPos
+   * @todo interpolate between the four neighboring grid values
+   */
+  positionElevation(gridPos: vec2): number {
+    let gridIndex = this.gridPosToGridIndex(gridPos);
+
+    return this.elevations[gridIndex[0]][gridIndex[1]];
+  }
+
+  /**
+   * Get the type of terrain at the given position
+   * @param gridPos
+   */
+  positionTerrainType(gridPos: vec2): TerrainType {
+    let elevation = this.positionElevation(gridPos);
+    if(elevation < this.waterLevel) {
+      return TerrainType.WATER;
+    }
+    else if (elevation < this.landLevel) {
+      return TerrainType.COAST
+    }
+    return TerrainType.LAND;
+  }
+
+  /**
+   * Check if the given position is on the water
+   * @param gridPos
+   */
+  positionOnWater(gridPos: vec2): boolean {
+    return this.positionTerrainType(gridPos) === TerrainType.WATER;
+  }
+
+  /**
+   * Check if the given positio is on the land
+   * @param gridPos
+   */
+  positionOnLand(gridPos: vec2): boolean {
+    return this.positionTerrainType(gridPos) === TerrainType.LAND;
+  }
+
+  gridPosToGridIndex(gridPos: vec2): vec2 {
+    let gridX = Math.floor(gridPos[0]);
+    let gridY = Math.floor(gridPos[1]);
+    if(gridX < 0) gridX = 0;
+    if(gridY < 0) gridY = 0;
+    if(gridX >= this.gridSize[0]) gridX = this.gridSize[0] -1;
+    if(gridY >= this.gridSize[0]) gridY = this.gridSize[1] -1;
+    return vec2.fromValues(gridX, gridY);
+  }
+
 
 }

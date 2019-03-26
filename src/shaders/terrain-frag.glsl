@@ -15,7 +15,6 @@ out vec4 out_Col; // This is the final output color that you will see on your
 void main()
 {
     vec3 groundColor = vec3(.0, 1, .0);
-    float fs_Sine = 0.5;
     float t = clamp(smoothstep(40.0, 50.0, length(fs_Pos)), 0.0, 1.0); // Distance fog
     //check for water
     if(fs_Pos.y <= 0.4) {

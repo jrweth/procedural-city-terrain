@@ -20,7 +20,7 @@ export class Turtle {
   //the type of road
   roadType: RoadType = RoadType.HIGHWAY;
 
-  segmentLength: number = 10;
+  segmentLength: number = 8;
   lengthScale: number = 0.9;
 
   angle: number = Math.PI / 4;

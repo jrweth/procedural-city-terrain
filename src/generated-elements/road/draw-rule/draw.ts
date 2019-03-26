@@ -28,7 +28,6 @@ export class Draw extends BaseDrawRule implements DrawRule {
     let endPoint = vec2.create();
     vec2.add(endPoint, turtle.pos, distance);
 
-    console.log(turtle.roadType);
     //try to add the segment
     let result = this.lsystem.addSegment(
       turtle.lastIntersectionId,

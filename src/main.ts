@@ -14,9 +14,15 @@ import RoadSegments from "./geometry/RoadSegments";
 // Define an object with application parameters and button callbacks
 // This will be referred to by dat.GUI's functions that add GUI elements.
 const controls = {
-  tesselations: 5,
+  'Elevation Seed': 1.234,
+  'Population Seed': 1.234,
+  'Road Seed': 1.234,
+  'Show Roads': true,
   'Load Scene': loadScene, // A function pointer, essentially
 };
+// Add controls to the gui
+const gui = new DAT.GUI();
+
 
 let terrain: Terrain;
 let roads: Roads;
@@ -33,13 +39,15 @@ function loadScene() {
 
   //initialize terrain
   terrain = new Terrain();
+  terrain.elevationSeed = vec2.fromValues(2.0, controls["Elevation Seed"]);
+  terrain.populationSeed = vec2.fromValues(1.2, controls["Population Seed"]);
   terrain.init();
   plane = new TerrainPlane(terrain);
   plane.create();
 
   //initialize roads
   roads = new Roads(1, {seed: 1.234, terrain: terrain});
-  roads.runExpansionIterations(1);
+  roads.runExpansionIterations(3);
   roads.runDrawRules();
   roadSegments = new RoadSegments({
     gridSize: terrain.gridSize,
@@ -58,7 +66,20 @@ function loadScene() {
   planePos = vec2.fromValues(0,0);
 }
 
+function setControls() {
+  let eSeed = gui.add(controls, 'Elevation Seed', {'seed 1': 1.234, 'seed 2': 5.43, 'seed 3': 8.987, 'seed 4': 89.3943}).listen();
+  eSeed.onChange(loadScene);
+  let pSeed = gui.add(controls, 'Population Seed', {'seed 1': 1.234, 'seed 2': 5.43, 'seed 3': 8.987, 'seed 4': 43.343}).listen();
+  pSeed.onChange(loadScene);
+  let rSeed = gui.add(controls, 'Road Seed', {'seed 1': 1.234, 'seed 2': 5.43, 'seed 3': 8.987, 'seed 4': 43.343}).listen();
+  rSeed.onChange(loadScene);
+  let showRoads = gui.add(controls, 'Show Roads');
+  // mapType.onChange();
+}
+
+
 function main() {
+  setControls();
   window.addEventListener('keypress', function (e) {
     // console.log(e.key);
     switch(e.key) {
@@ -102,8 +123,7 @@ function main() {
   stats.domElement.style.top = '0px';
   document.body.appendChild(stats.domElement);
 
-  // Add controls to the gui
-  const gui = new DAT.GUI();
+
 
   // get canvas and webgl context
   const canvas = <HTMLCanvasElement> document.getElementById('canvas');
@@ -170,12 +190,11 @@ function main() {
     renderer.render(camera, terrainShader, [
       plane
     ]);
-    renderer.render(camera, roadShader,
-      [roadSegments]
-    );
-    renderer.render(camera, flat, [
-      square,
-    ]);
+    if(controls["Show Roads"]) {
+      renderer.render(camera, roadShader,
+        [roadSegments]
+      );
+    }
     stats.end();
 
     // Tell the browser to call `tick` again whenever it renders a new frame

@@ -2,7 +2,6 @@ import {Intersection, LSystem} from "./lsystem";
 import {XReplace} from "./x-rule/x-replace";
 import {TurnTowardPopulation} from "./draw-rule/turn-toward-population";
 import {vec2} from "gl-matrix";
-//import Terrain, {TerrainSection} from "../geometry/Terrain";
 import {TurnAwayPopulation} from "./draw-rule/turn-away-population";
 import {SpanPopulation} from "./draw-rule/span_population";
 import {RoadType, Turtle} from "./turtle";
@@ -12,6 +11,7 @@ import {WaterConstraint} from "./constraint/water-constraint";
 import {EdgeOfMapConstraint} from "./constraint/edge-of-map-constraint";
 import {Terrain} from "../terrain";
 import {start} from "repl";
+import Random from "../../noise/random";
 
 class RoadGridSection {
   xIndex: number;
@@ -22,6 +22,7 @@ class RoadGridSection {
 class Roads extends LSystem {
   roadGrid: RoadGridSection[][]  = [];
   terrain: Terrain;
+  seed: number;
 
   //constructor
   constructor(iterations: number, options: {
@@ -30,9 +31,10 @@ class Roads extends LSystem {
   }) {
     super(options);
     this.terrain = options.terrain;
+    this.seed = options.seed;
     this.initRoadSections();
 
-    this.axiom = 'FFFF-FFFF+FFF';
+    this.axiom = '[----FL]FL';
     this.addStandardDrawRules();
 
     this.addDrawRule('P', new TurnTowardPopulation({
@@ -55,26 +57,41 @@ class Roads extends LSystem {
     this.addXRule('A', new XReplace('FPFPFPFPFPFjjjPFPFPFPFPF'));
     this.addXRule('L', new XReplace('A[--L]A[++L]A[--L]A[++L]AA[--L]A[++L]A'));
 
-    //
-    //this.addConstraint(new WaterConstraint({terrain: this.terrain, roads: this}));
-    //this.addConstraint(new EdgeOfMapConstraint({roads: this}));
-
-    this.turtle.roadType = RoadType.HIGHWAY;
-    let startIntersection = new Intersection();
-    startIntersection.pos = this.getRoadStartingPos();
-    startIntersection.segmentIds = [];
-    this.addIntersection(startIntersection);
-    this.turtle.lastIntersectionId = 0;
-    this.turtle.pos = startIntersection.pos;
-    this.turtle.dir = Math.PI / 4;
+    this.initStartingPos();
 
 
   }
 
+  initStartingPos(): void {
+
+    //get the starting intersection
+    let startPos: vec2 = this.getRoadStartingPos();
+    let startIntersection: Intersection = new Intersection();
+    startIntersection.pos = startPos;
+    startIntersection.segmentIds = [];
+    this.addIntersection(startIntersection);
+
+    //setup the turtle
+    this.turtle.roadType = RoadType.HIGHWAY;
+    this.turtle.lastIntersectionId = 0;
+    this.turtle.pos = startIntersection.pos;
+    this.turtle.dir = Math.PI / 2;
+  }
+
   getRoadStartingPos(): vec2 {
     let startPos: vec2 = vec2.create();
-    startPos[0] = this.terrain.gridSize[0] / 2;
-    startPos[1] = this.terrain.gridSize[1] / 2;
+    let onWater: boolean = true;
+    let seed = this.seed;
+    while(onWater) {
+      startPos[0] = Random.random1to1(1, vec2.fromValues(seed++, seed++)) * this.terrain.gridSize[0];
+      startPos[1] = Random.random1to1(2, vec2.fromValues(seed++, seed++)) * this.terrain.gridSize[1];
+      if(!this.terrain.positionOnWater(startPos)) {
+        onWater = false;
+      }
+    }
+    //startPos[0] = this.terrain.gridSize[0] / 2;
+    //startPos[1] = this.terrain.gridSize[1] / 2;
+    return vec2.fromValues(500, 500);
     return startPos;
   }
 

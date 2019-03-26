@@ -40,7 +40,6 @@ class RoadSegments extends Drawable {
     gl.bindBuffer(gl.ARRAY_BUFFER, this.bufPos);
     gl.bufferData(gl.ARRAY_BUFFER, this.positions, gl.STATIC_DRAW);
 
-    console.log(this.positions);
 
   }
 
@@ -79,8 +78,6 @@ class RoadSegments extends Drawable {
 
     this.offsets = new Float32Array(offsets);
     this.colors = new Float32Array(colors);
-    console.log(this.offsets);
-    console.log(this.colors);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.bufTranslate);
     gl.bufferData(gl.ARRAY_BUFFER, this.offsets, gl.STATIC_DRAW);
