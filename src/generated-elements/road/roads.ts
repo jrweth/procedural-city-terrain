@@ -63,6 +63,14 @@ class Roads extends LSystem {
     this.initStartingPos();
     this.turtle.segmentLength = this.options.highwaySegmentLength;
 
+    //add constraints
+    let waterConstraint = new WaterConstraint({
+      terrain: this.terrain,
+      roads: this
+    });
+    this.addConstraint(waterConstraint);
+
+
 
   }
 

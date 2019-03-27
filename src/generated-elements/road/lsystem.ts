@@ -129,30 +129,18 @@ export class LSystem {
     }
 
 
-    let nearestIntersectionId = this.findNearbyIntersectionId(endPos, 0.025);
-    if(nearestIntersectionId !== null) {
-      segment.endIntersectionId = nearestIntersectionId;
-      segment.rotation = VecMath.getRotationFromPoints(
-        this.intersections[startIntersectionId].pos,
-        this.intersections[nearestIntersectionId].pos
-      )
+
+    //add the end segment if we still need to
+    if(segment.endIntersectionId == this.intersections.length) {
+      let endIntersection = new Intersection();
+      endIntersection.pos = endPos;
+      endIntersection.segmentIds = [segmentId];
+
+      this.intersections[startIntersectionId].segmentIds.push(this.segments.length);
       this.segments.push(segment);
-      this.intersections[startIntersectionId].segmentIds.push(segmentId);
-      this.intersections[nearestIntersectionId].segmentIds.push(segmentId);
-      return {
-        added: true,
-        intersected: true,
-        segment: segment
-      };
+      this.addIntersection(endIntersection);
+
     }
-
-    let endIntersection = new Intersection();
-    endIntersection.pos = endPos;
-    endIntersection.segmentIds = [segmentId];
-
-    this.intersections[startIntersectionId].segmentIds.push(this.segments.length);
-    this.segments.push(segment);
-    this.addIntersection(endIntersection);
 
     return {
       added: true,
@@ -209,8 +197,8 @@ export class LSystem {
         }
 
         if(
-          this.turtle.roadType == RoadType.HIGHWAY ||
-          this.turtle.branchEnded == false
+          this.turtle.roadType == RoadType.HIGHWAY
+          || this.turtle.branchEnded == false
           || char == ']')
         {
           this.turtle = func.draw(this.turtle, this.turtleStack, this.segments, option);
