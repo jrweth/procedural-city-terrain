@@ -15,8 +15,8 @@ export class EdgeOfMapConstraint implements Constraint {
 
   checkConstraint(segment: Segment, endPos: vec2): boolean {
     let startPos: vec2 = this.roads.intersections[segment.startIntersectionId].pos;
-    if(Math.abs(startPos[0]) > 1) return false;
-    if(Math.abs(startPos[1]) > 1) return false;
+    if(Math.abs(startPos[0]) > this.terrain.gridSize[0]) return false;
+    if(Math.abs(startPos[1]) > this.terrain.gridSize[1]) return false;
 
     return true;
   }
@@ -24,9 +24,7 @@ export class EdgeOfMapConstraint implements Constraint {
   attemptAdjustment(segment: Segment, endPos: vec2): ConstraintAdjustment {
     let adj = new ConstraintAdjustment();
     adj.added = false;
-    adj.intersected = false;{
-      false
-    };
+    adj.intersected = false;
 
     return adj;
   }

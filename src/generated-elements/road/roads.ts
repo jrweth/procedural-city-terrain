@@ -130,7 +130,7 @@ class Roads extends LSystem {
     this.runExpansionIterations(5);
 
     let numInt = this.intersections.length;
-    let numNeighborhoods = 1000;
+    let numNeighborhoods = 50;
     for(let i = 0; i < numNeighborhoods; i++) {
       let intId = Math.floor(i * numInt / numNeighborhoods);
       this.addNeighborhood(intId, Math.PI * i / 6);

@@ -61,6 +61,7 @@ function loadScene() {
   });
   roads.runExpansionIterations(controls["Highway Iterations"]);
   roads.runDrawRules();
+  roads.addNeighborhoods();
   roadSegments = new RoadSegments({
     gridSize: terrain.gridSize,
     scale: plane.scale}

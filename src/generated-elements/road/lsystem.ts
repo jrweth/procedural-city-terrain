@@ -1,5 +1,5 @@
 import {XRule} from 'x-rule/x-rule';
-import {Turtle, RoadType, cloneTurtle} from './turtle';
+import {RoadType, Turtle} from './turtle';
 import {vec2} from "gl-matrix";
 import {Constraint, ConstraintAdjustment} from "./constraint/constraint";
 import {TurnRight} from "./draw-rule/turn-right";
@@ -7,7 +7,6 @@ import {TurnLeft} from "./draw-rule/turn-left";
 import {RandomAngle} from "./draw-rule/random-angle";
 import {ScaleLength} from "./draw-rule/scale-length";
 import {ScaleAngle} from "./draw-rule/scale-angle";
-import {StartBranch} from "./draw-rule/start-branch";
 import {EndBranch} from "./draw-rule/end-branch";
 import {DrawRule} from "./draw-rule/draw-rule";
 import {Draw} from "./draw-rule/draw";
@@ -209,7 +208,13 @@ export class LSystem {
           }
         }
 
+        if(
+          this.turtle.roadType == RoadType.HIGHWAY ||
+          this.turtle.branchEnded == false
+          || char == ']')
+        {
           this.turtle = func.draw(this.turtle, this.turtleStack, this.segments, option);
+        }
 
       }
     }
