@@ -27,7 +27,9 @@ class Roads extends LSystem {
   //constructor
   constructor(iterations: number, options: {
     seed: number,
-    terrain: Terrain
+    terrain: Terrain,
+    highwaySegmentLength: number,
+    highwayMaxTurnAngle: number
   }) {
     super(options);
     this.terrain = options.terrain;
@@ -39,7 +41,8 @@ class Roads extends LSystem {
 
     this.addDrawRule('P', new TurnTowardPopulation({
       seed: this.options.seed,
-      terrain: this.options.terrain
+      terrain: this.options.terrain,
+      maxTurnAngle: this.options.highwayMaxTurnAngle
     }));
 
     this.addDrawRule('p', new TurnAwayPopulation({
@@ -58,6 +61,7 @@ class Roads extends LSystem {
     this.addXRule('L', new XReplace('A[--L]A[++L]A[--L]A[++L]AA[--L]A[++L]A'));
 
     this.initStartingPos();
+    this.turtle.segmentLength = this.options.highwaySegmentLength;
 
 
   }
@@ -83,8 +87,8 @@ class Roads extends LSystem {
     let onWater: boolean = true;
     let seed = this.seed;
     while(onWater) {
-      startPos[0] = Random.random1to1(1, vec2.fromValues(seed++, seed++)) * this.terrain.gridSize[0];
-      startPos[1] = Random.random1to1(2, vec2.fromValues(seed++, seed++)) * this.terrain.gridSize[1];
+      startPos[0] = this.terrain.gridSize[0] / 4 + Random.random1to1(1, vec2.fromValues(seed++, seed++)) * this.terrain.gridSize[0]/2;
+      startPos[1] = this.terrain.gridSize[1] / 4 + Random.random1to1(2, vec2.fromValues(seed++, seed++)) * this.terrain.gridSize[1]/2;
       if(!this.terrain.positionOnWater(startPos)) {
         onWater = false;
       }

@@ -113,7 +113,6 @@ export class Terrain {
    * @param gridPos
    */
   getPopulationDensity(gridPos: vec2): number {
-    console.log('here');
     if(!this.positionOnLand(gridPos)) return 0;
     let worleyPos: vec2 = this.gridPosToWorlyPos(gridPos);
     let closestPopPoint = Noise.getClosestWorleyPoint2d(worleyPos, this.numPopulationPoints, this.populationPoints);

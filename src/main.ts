@@ -1,4 +1,4 @@
-import {vec2, vec3} from 'gl-matrix';
+import {vec2, vec3, vec4} from 'gl-matrix';
 import * as Stats from 'stats-js';
 import * as DAT from 'dat-gui';
 import Square from './geometry/Square';
@@ -14,14 +14,21 @@ import RoadSegments from "./geometry/RoadSegments";
 // Define an object with application parameters and button callbacks
 // This will be referred to by dat.GUI's functions that add GUI elements.
 const controls = {
+  'Show Roads': true,
+  'Show Population Density': true,
+
   'Elevation Seed': 1.234,
   'Population Seed': 1.234,
+
   'Road Seed': 1.234,
-  'Show Roads': true,
+  'Highway Segment Length': 12,
+  'Highway Iterations': 3,
+  'Highway Max Turn Angle': Math.PI / 18,
   'Load Scene': loadScene, // A function pointer, essentially
 };
 // Add controls to the gui
 const gui = new DAT.GUI();
+gui.width = 320;
 
 
 let terrain: Terrain;
@@ -46,8 +53,13 @@ function loadScene() {
   plane.create();
 
   //initialize roads
-  roads = new Roads(1, {seed: 1.234, terrain: terrain});
-  roads.runExpansionIterations(3);
+  roads = new Roads(1, {
+    seed: controls["Road Seed"],
+    terrain: terrain,
+    highwaySegmentLength: controls["Highway Segment Length"],
+    highwayMaxTurnAngle: controls["Highway Max Turn Angle"]
+  });
+  roads.runExpansionIterations(controls["Highway Iterations"]);
   roads.runDrawRules();
   roadSegments = new RoadSegments({
     gridSize: terrain.gridSize,
@@ -66,20 +78,67 @@ function loadScene() {
   planePos = vec2.fromValues(0,0);
 }
 
-function setControls() {
-  let eSeed = gui.add(controls, 'Elevation Seed', {'seed 1': 1.234, 'seed 2': 5.43, 'seed 3': 8.987, 'seed 4': 89.3943}).listen();
+/**
+ * Initialize the Seed Controls
+ */
+function addTerrainControls() {
+  let terrainFolder = gui.addFolder('terrain');
+  let eSeed = terrainFolder.add(controls, 'Elevation Seed', {'seed 1': 1.234, 'seed 2': 5.43, 'seed 3': 8.987, 'seed 4': 89.3943}).listen();
   eSeed.onChange(loadScene);
-  let pSeed = gui.add(controls, 'Population Seed', {'seed 1': 1.234, 'seed 2': 5.43, 'seed 3': 8.987, 'seed 4': 43.343}).listen();
+  let pSeed = terrainFolder.add(controls, 'Population Seed', {'seed 1': 1.234, 'seed 2': 5.43, 'seed 3': 8.987, 'seed 4': 43.343}).listen();
   pSeed.onChange(loadScene);
-  let rSeed = gui.add(controls, 'Road Seed', {'seed 1': 1.234, 'seed 2': 5.43, 'seed 3': 8.987, 'seed 4': 43.343}).listen();
-  rSeed.onChange(loadScene);
-  let showRoads = gui.add(controls, 'Show Roads');
+
   // mapType.onChange();
+}
+
+function getDisplayOptions(): vec4 {
+  return vec4.fromValues(
+    controls["Show Population Density"] ? 1 : 0,
+    0,
+    0,
+    0
+  );
+}
+
+/**
+ * Initialize the display controls
+ * @param options
+ */
+function addDisplayControls(options: {
+  terrainShader: ShaderProgram;
+
+}) {
+  let displayFolder = gui.addFolder('display');
+  let showRoads = displayFolder.add(controls, 'Show Roads');
+  let showPop = displayFolder.add(controls, 'Show Population Density').listen();
+  showPop.onChange(() => {
+    options.terrainShader.setDisplayOptions(getDisplayOptions());
+  });
+}
+
+function addRoadControls() {
+  let roadFolder = gui.addFolder('roads');
+  let rSeed = roadFolder.add(controls, 'Road Seed', {'seed 1': 1.234, 'seed 2': 5.43, 'seed 3': 8.987, 'seed 4': 43.343}).listen();
+  let rLength = roadFolder.add(controls, 'Highway Segment Length', [1,2,4, 8, 12, 16, 32]).listen();
+  let rIter = roadFolder.add(controls, 'Highway Iterations', [3,4,5]).listen();
+  let rAngle = roadFolder.add(controls, 'Highway Max Turn Angle', {
+    '2 deg': Math.PI / 90,
+    '5 deg': Math.PI / 36,
+    '10 deg': Math.PI / 18,
+    '15 deg': Math.PI / 12,
+    '20 deg': Math.PI / 9,
+    '30 deg': Math.PI / 6,
+    '45 deg': Math.PI / 4
+  }).listen();
+
+  rSeed.onChange(loadScene);
+  rLength.onChange(loadScene);
+  rIter.onChange(loadScene);
+  rAngle.onChange(loadScene);
 }
 
 
 function main() {
-  setControls();
   window.addEventListener('keypress', function (e) {
     // console.log(e.key);
     switch(e.key) {
@@ -158,6 +217,18 @@ function main() {
     new Shader(gl.VERTEX_SHADER, require('./shaders/flat-vert.glsl')),
     new Shader(gl.FRAGMENT_SHADER, require('./shaders/flat-frag.glsl')),
   ]);
+
+  terrainShader.setDisplayOptions(vec4.fromValues(1,0,0,0))
+
+  //add all the controls
+  addDisplayControls({terrainShader: terrainShader});
+  addTerrainControls();
+  addRoadControls();
+
+  /**
+   * more control stuff
+   */
+
 
   function processKeyPresses() {
     let velocity: vec2 = vec2.fromValues(0,0);

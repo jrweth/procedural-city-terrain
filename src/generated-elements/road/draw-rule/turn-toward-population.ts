@@ -9,8 +9,9 @@ let Prando = require('prando').default;
 export class TurnTowardPopulation extends BaseDrawRule implements DrawRule {
   prando: any;
   terrain: Terrain;
+  maxTurnAngle: number;
 
-  constructor(options: {seed: number, terrain: Terrain}) {
+  constructor(options: {seed: number, terrain: Terrain, maxTurnAngle: number}) {
     super(options);
     this.prando = new Prando(options.seed);
     this.terrain = options.terrain;
@@ -18,7 +19,7 @@ export class TurnTowardPopulation extends BaseDrawRule implements DrawRule {
 
   draw(turtle: Turtle, turtleStack: Turtle[], segments: Segment[], options: string) {
     //default to the current turtle roll angle
-    let maxAngle:number = Math.PI / 50;
+    let maxAngle:number = this.options.maxTurnAngle;
 
     let bestDir = turtle.dir;
     let highestSum = this.checkPopulationAtDirection(turtle, turtle.dir);

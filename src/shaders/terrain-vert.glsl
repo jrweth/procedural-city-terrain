@@ -29,6 +29,8 @@ vec2 random2( vec2 p , vec2 seed) {
 void main()
 {
   fs_Pos = vs_Pos.xyz;
+  fs_Col = vs_Col;
+  fs_Nor = vs_Nor;
   vec4 modelposition = vec4(vs_Pos.x, vs_Pos.y, vs_Pos.z, 1.0);
   //water
   if(vs_Pos.y < 0.4) {

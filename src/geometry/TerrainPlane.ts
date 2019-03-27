@@ -9,6 +9,7 @@ class TerrainPlane extends Drawable {
   indices: Uint32Array;
   positions: Float32Array;
   normals: Float32Array;
+  colors: Float32Array;
   scale: vec2;
   gridSize: vec2;
   subdivs: number; // 2^subdivs is how many squares will compose the plane; must be even.
@@ -29,6 +30,7 @@ class TerrainPlane extends Drawable {
     this.generateIdx();
     this.generatePos();
     this.generateNor();
+    this.generateCol();
 
     this.count = this.indices.length;
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.bufIdx);
@@ -40,6 +42,8 @@ class TerrainPlane extends Drawable {
     gl.bindBuffer(gl.ARRAY_BUFFER, this.bufPos);
     gl.bufferData(gl.ARRAY_BUFFER, this.positions, gl.STATIC_DRAW);
 
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.bufCol);
+    gl.bufferData(gl.ARRAY_BUFFER, this.colors, gl.STATIC_DRAW);
   }
 
 
@@ -52,6 +56,7 @@ class TerrainPlane extends Drawable {
     this.positions = new Float32Array(numPoints * 4);
     this.normals = new Float32Array(numPoints * 4);
     this.indices = new Uint32Array(numGridSquares * 6); // NxN squares, each square is two triangles, each triangle is three indices
+    this.colors = new Float32Array(numPoints * 4);
 
     let posIdx = 0;
     for(let x = 0; x <= this.gridSize[0]; ++x) {
@@ -59,12 +64,19 @@ class TerrainPlane extends Drawable {
 
         // Make a strip of vertices along Z with the current X coord
         this.normals  [posIdx] = 0;
+        this.colors   [posIdx] = 0;
         this.positions[posIdx++] = x * normalizeX * this.scale[0]  - this.scale[0] * 0.5;
+
         this.normals[posIdx] = 1;
+        this.colors[posIdx] = 0;
         this.positions[posIdx++] = this.terrain.elevations[x][z];
+
         this.normals[posIdx] = 0;
         this.positions[posIdx++] = z * normalizeY* this.scale[1]  - this.scale[1] * 0.5;
-        this.normals[posIdx] = 0;
+        this.colors[posIdx] = 0;
+
+        this.normals[posIdx] = this.terrain.getPopulationDensity(vec2.fromValues(x, z));
+        this.colors[posIdx] = 0;
         this.positions[posIdx++] = 1;
       }
     }

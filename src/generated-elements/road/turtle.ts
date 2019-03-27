@@ -30,6 +30,8 @@ export class Turtle {
 
   lastIntersectionId: number = 0;
 
+  numIntersections: number = 0;
+
 }
 
 export function cloneTurtle(turtle: Turtle): Turtle {
@@ -47,6 +49,7 @@ export function cloneTurtle(turtle: Turtle): Turtle {
   newTurtle.angleScale = turtle.angleScale;
   newTurtle.branchEnded = turtle.branchEnded;
   newTurtle.lastIntersectionId = turtle.lastIntersectionId;
+  newTurtle.numIntersections = turtle.numIntersections;
 
   return newTurtle;
 }
