@@ -7,6 +7,13 @@ export enum TerrainType {
   COAST = 2
 }
 
+export class GridPart {
+  minElevation: number = 0;
+  avgDensity: number = 0;
+  roadSegmentIds: number[] = [];
+  roadIntersectionIds: number[] = [];
+}
+
 /**
  * Class which represents the terrain which can be calculated once
  */
@@ -30,16 +37,21 @@ export class Terrain {
   //2 dimensional array representing the height at the [x][z] coordinate can be from 0 to 1
   elevations: number[][];
 
+  //2 dimensional array representing the density at each grid point
+  populationDensities: number[][];
+
+
   //2 dimensional array representing the normal at each [x][z] coordinate
   normals: vec3[][];
 
+  //2 dimenstional  array containing aggregate information for each gird part
+  gridParts: GridPart[][];
   init() {
     this.initElevations();
     this.initNormals();
     this.initPopulation();
-
+    this.initGridParts();
   }
-
 
   /**
    * Initialize the elevation grid
@@ -96,9 +108,20 @@ export class Terrain {
     }
   }
 
+  /**
+   * Initialize the population density for the grid
+   */
   initPopulation() {
-      this.populationPoints = Noise.generateWorleyPoints2d(this.numPopulationPoints, this.populationSeed);
-      console.log(this.populationPoints);
+    this.populationPoints = Noise.generateWorleyPoints2d(this.numPopulationPoints, this.populationSeed);
+
+    this.populationDensities = [];
+    for(let x = 0; x <= this.gridSize[0]; x++) {
+      this.populationDensities.push([]);
+      for(let z = 0; z <= this.gridSize[1]; z++) {
+        let pos: vec2 = vec2.fromValues(x, z);
+        this.populationDensities[x].push(this.getPopulationDensity(pos));
+      }
+    }
   }
 
   gridPosToWorlyPos(gridPos: vec2): vec2 {
@@ -172,6 +195,44 @@ export class Terrain {
     if(gridX >= this.gridSize[0]) gridX = this.gridSize[0] -1;
     if(gridY >= this.gridSize[0]) gridY = this.gridSize[1] -1;
     return vec2.fromValues(gridX, gridY);
+  }
+
+  setGridPartAttribute(i: number, j: number, attribute: string, value: number) {
+    switch (attribute) {
+      case 'minElevation': this.gridParts[i][j].minElevation = value; break;
+      case 'avgDensity': this.gridParts[i][j].avgDensity = value; break;
+    }
+  }
+
+
+
+  /**
+   * loop through grid and calculate min elevation and avg density
+   */
+  initGridParts() {
+    this.gridParts = [];
+    for(let i = 0; i < this.gridSize[0]; i++) {
+      this.gridParts.push([]);
+      for (let j = 0; j < this.gridSize[1]; j++) {
+        this.gridParts[i].push(new GridPart);
+        let  minElevation = Math.min(
+          this.elevations[i][j],
+          this.elevations[i+1][j],
+          this.elevations[i][j+1],
+          this.elevations[i+1][j+1],
+        );
+        this.setGridPartAttribute(i, j, 'minElevation',minElevation);
+
+        let avgDensity = (
+          this.populationDensities[i][j] +
+          this.populationDensities[i+1][j] +
+          this.populationDensities[i][j+1] +
+          this.populationDensities[i+1][j+1]
+        )/4;
+        this.setGridPartAttribute(i, j, 'avgDensity', avgDensity);
+      }
+    }
+
   }
 
 

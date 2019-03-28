@@ -22,9 +22,11 @@ export class WaterConstraint implements Constraint {
       segment.rotation = VecMath.getRotationFromPoints(
         this.roads.intersections[segment.startIntersectionId].pos,
         this.roads.intersections[nearestIntersectionId].pos
-      )
+      );
+      let segmentId = this.roads.segments.length;
       this.roads.segments.push(segment);
       this.roads.intersections[segment.startIntersectionId].segmentIds.push(segmentId);
+
       this.roads.intersections[nearestIntersectionId].segmentIds.push(segmentId);
     }
     if(segment.roadType == RoadType.STREET) {

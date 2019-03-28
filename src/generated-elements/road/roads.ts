@@ -13,14 +13,8 @@ import {Terrain} from "../terrain";
 import {start} from "repl";
 import Random from "../../noise/random";
 
-class RoadGridSection {
-  xIndex: number;
-  zIndex: number;
-  intersectionIds: number[] = [];
-}
 
 class Roads extends LSystem {
-  roadGrid: RoadGridSection[][]  = [];
   terrain: Terrain;
   seed: number;
 
