@@ -48,26 +48,23 @@ function loadScene() {
   terrain = new Terrain();
   terrain.elevationSeed = vec2.fromValues(2.0, controls["Elevation Seed"]);
   terrain.populationSeed = vec2.fromValues(1.2, controls["Population Seed"]);
+  terrain.roadSeed = controls["Road Seed"];
+  terrain.highwayIterations = controls["Highway Iterations"];
+  terrain.highwayMaxTurnAngle = controls["Highway Max Turn Angle"];
+  terrain.highwaySegmentLength = controls["Highway Segment Length"]
   terrain.init();
+
+  //create the plane geometry
   plane = new TerrainPlane(terrain);
   plane.create();
 
-  //initialize roads
-  roads = new Roads(1, {
-    seed: controls["Road Seed"],
-    terrain: terrain,
-    highwaySegmentLength: controls["Highway Segment Length"],
-    highwayMaxTurnAngle: controls["Highway Max Turn Angle"]
-  });
-  roads.runExpansionIterations(controls["Highway Iterations"]);
-  roads.runDrawRules();
-  roads.addNeighborhoods();
+  //create the road geometry
   roadSegments = new RoadSegments({
     gridSize: terrain.gridSize,
     scale: plane.scale}
   );
   roadSegments.create();
-  roadSegments.setInstanceVBOs(roads.segments, roads.intersections);
+  roadSegments.setInstanceVBOs(terrain.roads.segments, terrain.roads.intersections);
 
   square = new Square(vec3.fromValues(0, 0, 0));
   square.create();

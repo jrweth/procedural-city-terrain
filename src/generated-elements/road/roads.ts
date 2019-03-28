@@ -6,7 +6,7 @@ import {TurnAwayPopulation} from "./draw-rule/turn-away-population";
 import {SpanPopulation} from "./draw-rule/span_population";
 import {RoadType, Turtle} from "./turtle";
 import {StartBranch} from "./draw-rule/start-branch";
-import {Constraint} from "./constraint/constraint";
+import {Constraint, ConstraintAdjustment} from "./constraint/constraint";
 import {WaterConstraint} from "./constraint/water-constraint";
 import {EdgeOfMapConstraint} from "./constraint/edge-of-map-constraint";
 import {Terrain} from "../terrain";
@@ -98,6 +98,21 @@ class Roads extends LSystem {
     //startPos[0] = this.terrain.gridSize[0] / 2;
     //startPos[1] = this.terrain.gridSize[1] / 2;
     return startPos;
+  }
+
+  /**
+   * Override the add segment - if the segment is added then we must add to terrain
+   * @param startIntersectionId
+   * @param endPos
+   * @param rotation
+   * @param roadType
+   */
+  addSegment(startIntersectionId: number, endPos: vec2, rotation: number, roadType: RoadType): ConstraintAdjustment {
+    let adj: ConstraintAdjustment = super.addSegment(startIntersectionId, endPos, rotation, roadType);
+    if (adj.added) {
+
+    }
+    return adj;
   }
 
   addConstraint(constraint: Constraint) {

@@ -1,5 +1,6 @@
 import {vec2, vec3} from "gl-matrix";
 import Noise from "../noise/noise";
+import Roads from "./road/roads";
 
 export enum TerrainType {
   WATER = 0,
@@ -46,11 +47,29 @@ export class Terrain {
 
   //2 dimenstional  array containing aggregate information for each gird part
   gridParts: GridPart[][];
+
+  //the roads for the terrain
+  roads: Roads;
+
+  //seed for the road
+  roadSeed: number = 1;
+
+  //highway segment lenght for roads
+  highwaySegmentLength: number = 12;
+
+  //hightway max turn angle
+  highwayMaxTurnAngle: number = Math.PI / 18;
+
+  //number of times to iterate the highway lsystem
+  highwayIterations: number = 3;
+
+
   init() {
     this.initElevations();
     this.initNormals();
     this.initPopulation();
     this.initGridParts();
+    this.initRoads();
   }
 
   /**
@@ -122,6 +141,49 @@ export class Terrain {
         this.populationDensities[x].push(this.getPopulationDensity(pos));
       }
     }
+  }
+
+  /**
+   * loop through grid and calculate min elevation and avg density
+   */
+  initGridParts() {
+    this.gridParts = [];
+    for(let i = 0; i < this.gridSize[0]; i++) {
+      this.gridParts.push([]);
+      for (let j = 0; j < this.gridSize[1]; j++) {
+        this.gridParts[i].push(new GridPart);
+        let  minElevation = Math.min(
+          this.elevations[i][j],
+          this.elevations[i+1][j],
+          this.elevations[i][j+1],
+          this.elevations[i+1][j+1],
+        );
+        this.setGridPartAttribute(i, j, 'minElevation',minElevation);
+
+        let avgDensity = (
+          this.populationDensities[i][j] +
+          this.populationDensities[i+1][j] +
+          this.populationDensities[i][j+1] +
+          this.populationDensities[i+1][j+1]
+        )/4;
+        this.setGridPartAttribute(i, j, 'avgDensity', avgDensity);
+      }
+    }
+
+  }
+
+
+  initRoads() {
+    //initialize roads
+    this.roads = new Roads(this.highwayIterations, {
+      seed: this.roadSeed,
+      terrain: this,
+      highwaySegmentLength: this.highwaySegmentLength,
+      highwayMaxTurnAngle: this.highwayMaxTurnAngle
+    });
+    this.roads.runExpansionIterations(this.highwayIterations);
+    this.roads.runDrawRules();
+    this.roads.addNeighborhoods();
   }
 
   gridPosToWorlyPos(gridPos: vec2): vec2 {
@@ -206,34 +268,6 @@ export class Terrain {
 
 
 
-  /**
-   * loop through grid and calculate min elevation and avg density
-   */
-  initGridParts() {
-    this.gridParts = [];
-    for(let i = 0; i < this.gridSize[0]; i++) {
-      this.gridParts.push([]);
-      for (let j = 0; j < this.gridSize[1]; j++) {
-        this.gridParts[i].push(new GridPart);
-        let  minElevation = Math.min(
-          this.elevations[i][j],
-          this.elevations[i+1][j],
-          this.elevations[i][j+1],
-          this.elevations[i+1][j+1],
-        );
-        this.setGridPartAttribute(i, j, 'minElevation',minElevation);
-
-        let avgDensity = (
-          this.populationDensities[i][j] +
-          this.populationDensities[i+1][j] +
-          this.populationDensities[i][j+1] +
-          this.populationDensities[i+1][j+1]
-        )/4;
-        this.setGridPartAttribute(i, j, 'avgDensity', avgDensity);
-      }
-    }
-
-  }
 
 
 }
