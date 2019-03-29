@@ -24,6 +24,8 @@ const controls = {
   'Highway Segment Length': 12,
   'Highway Iterations': 3,
   'Highway Max Turn Angle': Math.PI / 18,
+  'Street Segment Length': 8,
+  'Street Iterations': 5,
   'Load Scene': loadScene, // A function pointer, essentially
 };
 // Add controls to the gui
@@ -51,7 +53,9 @@ function loadScene() {
   terrain.roadSeed = controls["Road Seed"];
   terrain.highwayIterations = controls["Highway Iterations"];
   terrain.highwayMaxTurnAngle = controls["Highway Max Turn Angle"];
-  terrain.highwaySegmentLength = controls["Highway Segment Length"]
+  terrain.highwaySegmentLength = controls["Highway Segment Length"];
+  terrain.streetSegmentLength = controls["Street Segment Length"];
+  terrain.streetIterations = controls["Street Iterations"];
   terrain.init();
 
   //create the plane geometry
@@ -129,10 +133,15 @@ function addRoadControls() {
     '45 deg': Math.PI / 4
   }).listen();
 
+  let sIter = roadFolder.add(controls, 'Street Iterations', [3,4,5,6,7]).listen();
+  let sLength = roadFolder.add(controls, 'Street Segment Length', [2 ,4, 8, 12, 16]).listen();
+
   rSeed.onChange(loadScene);
   rLength.onChange(loadScene);
   rIter.onChange(loadScene);
   rAngle.onChange(loadScene);
+  sIter.onChange(loadScene);
+  sLength.onChange(loadScene);
 }
 
 

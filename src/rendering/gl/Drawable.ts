@@ -20,12 +20,14 @@ abstract class Drawable {
   bufIdx: WebGLBuffer;
   bufPos: WebGLBuffer;
   bufNor: WebGLBuffer;
+  bufInfo: WebGLBuffer;
   bufCol: WebGLBuffer;
   bufTranslate: WebGLBuffer;
 
   idxBound: boolean = false;
   posBound: boolean = false;
   norBound: boolean = false;
+  infoBound: boolean = false;
   colBound: boolean = false;
   translateBound: boolean = false;
 
@@ -57,6 +59,11 @@ abstract class Drawable {
     this.bufNor = gl.createBuffer();
   }
 
+  generateInfo() {
+    this.infoBound = true;
+    this.bufInfo = gl.createBuffer();
+  }
+
   generateCol() {
     this.colBound = true;
     this.bufCol = gl.createBuffer();
@@ -86,6 +93,13 @@ abstract class Drawable {
       gl.bindBuffer(gl.ARRAY_BUFFER, this.bufNor);
     }
     return this.norBound;
+  }
+
+  bindInfo(): boolean {
+    if (this.infoBound) {
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.bufInfo);
+    }
+    return this.infoBound;
   }
 
   bindCol(): boolean {

@@ -23,6 +23,7 @@ class ShaderProgram {
 
   attrPos: number;
   attrNor: number;
+  attrInfo: number;
   attrCol: number;
   attrTranslate: number;
 
@@ -46,6 +47,7 @@ class ShaderProgram {
     this.attrPos        = gl.getAttribLocation(this.prog, "vs_Pos");
     this.attrNor        = gl.getAttribLocation(this.prog, "vs_Nor");
     this.attrCol        = gl.getAttribLocation(this.prog, "vs_Col");
+    this.attrInfo       = gl.getAttribLocation(this.prog, "vs_Info");
     this.attrTranslate  = gl.getAttribLocation(this.prog, "vs_Translate");
 
     this.unifModel      = gl.getUniformLocation(this.prog, "u_Model");
@@ -112,6 +114,12 @@ class ShaderProgram {
       gl.vertexAttribDivisor(this.attrNor, 0);
     }
 
+    if (this.attrInfo != -1 && d.bindInfo()) {
+      gl.enableVertexAttribArray(this.attrInfo);
+      gl.vertexAttribPointer(this.attrInfo, 4, gl.FLOAT, false, 0, 0);
+      gl.vertexAttribDivisor(this.attrInfo, 0);
+    }
+
     if (this.attrCol != -1 && d.bindCol()) {
       gl.enableVertexAttribArray(this.attrCol);
       gl.vertexAttribPointer(this.attrCol, 4, gl.FLOAT, false, 0, 0);
@@ -129,6 +137,7 @@ class ShaderProgram {
 
     if (this.attrPos != -1) gl.disableVertexAttribArray(this.attrPos);
     if (this.attrNor != -1) gl.disableVertexAttribArray(this.attrNor);
+    if (this.attrInfo != -1) gl.disableVertexAttribArray(this.attrInfo);
   }
 };
 

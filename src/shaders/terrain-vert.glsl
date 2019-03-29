@@ -9,10 +9,12 @@ uniform vec2 u_PlanePos; // Our location in the virtual world displayed by the p
 in vec4 vs_Pos;
 in vec4 vs_Nor;
 in vec4 vs_Col;
+in vec4 vs_Info;
 
 out vec3 fs_Pos;
 out vec4 fs_Nor;
 out vec4 fs_Col;
+out vec4 fs_Info;
 
 float random1( vec2 p , vec2 seed) {
   return fract(sin(dot(p + seed, vec2(127.1, 311.7))) * 43758.5453);
@@ -31,6 +33,7 @@ void main()
   fs_Pos = vs_Pos.xyz;
   fs_Col = vs_Col;
   fs_Nor = vs_Nor;
+  fs_Info = vs_Info;
   vec4 modelposition = vec4(vs_Pos.x, vs_Pos.y, vs_Pos.z, 1.0);
   //water
   if(vs_Pos.y < 0.4) {
@@ -43,6 +46,10 @@ void main()
   //land
   else {
      modelposition.y = 0.5;
+  }
+  //building
+  if(vs_Info.y == 1.0) {
+     //modelposition.y = 4.0;
   }
   modelposition = u_Model * modelposition;
   gl_Position = u_ViewProj * modelposition;

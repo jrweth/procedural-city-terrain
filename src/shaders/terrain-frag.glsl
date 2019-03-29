@@ -7,6 +7,7 @@ uniform vec4 u_DisplayOptions;
 in vec3 fs_Pos;
 in vec4 fs_Nor;
 in vec4 fs_Col;
+in vec4 fs_Info;
 
 //in float fs_Sine;
 
@@ -26,8 +27,18 @@ void main()
     if(fs_Pos.y <= 0.4) {
         groundColor = vec3(0.0, 0.0, 1.0);
     }
+    //check for sand
     else if(fs_Pos.y < 0.43) {
-        groundColor = vec3(1.0, 1.0, 0.0);
+        groundColor = mix(vec3(0.0, 1.0, 0.0), vec3(1.0, 1.0, 0.0), (0.43 - fs_Pos.y) * 33.33);
     }
+    //building possibility
+    if(fs_Info.x == 1.0) {
+        groundColor = vec3(0.5, 0.5, 0.5);
+    }
+    //building locations
+    if(fs_Info.y == 1.0) {
+        groundColor = vec3(0.0, 0.0, 0.0);
+    }
+
     out_Col = vec4(mix(groundColor, vec3(164.0 / 255.0, 233.0 / 255.0, 1.0), t), 1.0);
 }

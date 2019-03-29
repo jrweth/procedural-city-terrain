@@ -69,8 +69,8 @@ class RoadSegments extends Drawable {
       offsets.push(startPosScreen[0], 0, startPosScreen[1], 0);
 
       switch(segments[i].roadType) {
-        case RoadType.HIGHWAY: width = 1; break
-        case RoadType.STREET:    width = 0.5; break
+        case RoadType.HIGHWAY: width = 0.5; break
+        case RoadType.STREET:    width = 0.2; break
       }
       length = vec2.dist(startPosScreen, endPosScreen);
       colors.push(length, width, segments[i].rotation, 0);

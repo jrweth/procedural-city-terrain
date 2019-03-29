@@ -1,6 +1,9 @@
 import {vec2, vec3} from "gl-matrix";
 import Noise from "../noise/noise";
 import Roads from "./road/roads";
+import {Segment} from "./road/lsystem";
+import {VecMath} from "../utils/vec-math";
+import {RoadType} from "./road/turtle";
 
 export enum TerrainType {
   WATER = 0,
@@ -13,6 +16,9 @@ export class GridPart {
   avgDensity: number = 0;
   roadSegmentIds: number[] = [];
   roadIntersectionIds: number[] = [];
+  containsStreet: boolean = false;
+  containsHighway: boolean = false;
+  hasBuilding: boolean = false;
 }
 
 /**
@@ -63,6 +69,9 @@ export class Terrain {
   //number of times to iterate the highway lsystem
   highwayIterations: number = 3;
 
+  streetSegmentLength: number = 8;
+
+  streetIterations: number = 5;
 
   init() {
     this.initElevations();
@@ -70,6 +79,7 @@ export class Terrain {
     this.initPopulation();
     this.initGridParts();
     this.initRoads();
+    this.initBuildings();
   }
 
   /**
@@ -179,11 +189,23 @@ export class Terrain {
       seed: this.roadSeed,
       terrain: this,
       highwaySegmentLength: this.highwaySegmentLength,
-      highwayMaxTurnAngle: this.highwayMaxTurnAngle
+      highwayMaxTurnAngle: this.highwayMaxTurnAngle,
+      streetSegmentLength: this.streetSegmentLength,
+      streetIterations: this.streetIterations
     });
     this.roads.runExpansionIterations(this.highwayIterations);
     this.roads.runDrawRules();
+    // console.log(this.gridParts[350][353]);
+    // for(let i = 0; i < this.gridParts[350][353].roadSegmentIds.length; i++) {
+    //   let roadSegment = this.roads.segments[this.gridParts[350][353].roadSegmentIds[i]];
+    //   console.log(this.roads.intersections[roadSegment.startIntersectionId]);
+    //   console.log(this.roads.intersections[roadSegment.endIntersectionId]);
+    // }
     this.roads.addNeighborhoods();
+  }
+
+  initBuildings() {
+    this.selectBuildingLocations();
   }
 
   gridPosToWorlyPos(gridPos: vec2): vec2 {
@@ -205,6 +227,42 @@ export class Terrain {
       return Math.pow((1-vec2.dist(worleyPos, closestPopPoint))/1.414, 3);
     }
     return 0;
+  }
+
+  checkGridPosOutOfBounds(gridPos: vec2): boolean {
+    //check if we are in bounds
+    return (
+      gridPos[0] < 0 ||
+      gridPos[1] < 0 ||
+      gridPos[0] >= this.gridSize[0] ||
+      gridPos[1] >= this.gridSize[1]
+    );
+  }
+
+  hasNearbyStreet(gridPos: vec2): boolean {
+    if(this.checkGridPosOutOfBounds(gridPos)) return false;
+
+    let blockRadius = this.streetSegmentLength * 0.75;
+    let minX = Math.max(0, gridPos[0] - blockRadius);
+    let minZ = Math.max(0, gridPos[1] - blockRadius);
+    let maxX = Math.min(this.gridSize[0] - 1, gridPos[0] + blockRadius);
+    let maxZ = Math.min(this.gridSize[1] - 1, gridPos[1] + blockRadius);
+    for(let i = minX; i <= maxX; i++) {
+      for (let j = minZ; j <= maxZ; j++) {
+        if(this.gridParts[i][j].containsStreet == true) return true;
+      }
+    }
+
+    return false;
+  }
+
+  getBuildingSuitability(gridPos: vec2): boolean {
+    if(this.checkGridPosOutOfBounds(gridPos)) return false;
+
+    return (
+      this.hasNearbyStreet(gridPos)
+      && this.gridParts[gridPos[0]][gridPos[1]].roadSegmentIds.length == 0
+    );
   }
 
   /**
@@ -267,7 +325,85 @@ export class Terrain {
   }
 
 
+  /**
+   * Add a road segment
+   * @param segmentId
+   */
+  addRoadSegment(segmentId: number) {
+    let gridPos: vec2[] = this.getSegmentGridPositions(segmentId);
+    for(let i = 0; i < gridPos.length; i++) {
+      this.gridParts[ gridPos[i][0] ][ gridPos[i][1] ].roadSegmentIds.push(segmentId);
+      if(this.roads.segments[segmentId].roadType == RoadType.STREET) {
+        this.gridParts[ gridPos[i][0] ][ gridPos[i][1] ].containsStreet = true;
+      }
+      if(this.roads.segments[segmentId].roadType == RoadType.HIGHWAY) {
+        this.gridParts[ gridPos[i][0] ][ gridPos[i][1] ].containsHighway = true;
+      }
+    }
+  }
+  /**
+   * Get the gridPositions through which the road passes
+   * @param segmentId
+   */
+  getSegmentGridPositions(segmentId: number): vec2[] {
+    let gridPos: vec2[] = [];
 
+    let segment = this.roads.segments[segmentId];
+    let p1: vec2 =this.roads.intersections[segment.startIntersectionId].pos;
+    let p2: vec2 =this.roads.intersections[segment.endIntersectionId].pos;
+
+
+    //loop through all the possible grid positions
+    let minX = Math.floor(Math.min(p1[0], p2[0], this.gridSize[0]));
+    let maxX = Math.floor(Math.max(p1[0], p2[0], 0));
+    let minZ = Math.floor(Math.min(p1[1], p2[1], this.gridSize[1]));
+    let maxZ = Math.floor(Math.max(p1[1], p2[1], 0));
+    if(minX < 0) minX = 0;
+    if(minZ < 0) minZ = 0;
+    if(maxX >= this.gridSize[0]) maxX = this.gridSize[0] - 1;
+    if(maxZ >= this.gridSize[1]) maxZ = this.gridSize[1] - 1;
+
+    for(let i = minX; i <= maxX; i++) {
+      for(let j = minZ; j <= maxZ; j++) {
+        //console.log(i + '-' + j);
+        //check for intersections
+        let g1: vec2 = vec2.fromValues(i, j);
+        let g2: vec2 = vec2.fromValues(i, j+1);
+        let g3: vec2 = vec2.fromValues(i+i, j);
+        let g4: vec2 = vec2.fromValues(i+i, j+1);
+        if(
+          VecMath.intersectionTest(g1, g2, p1, p2) !== undefined ||
+          VecMath.intersectionTest(g1, g3, p1, p2) !== undefined ||
+          VecMath.intersectionTest(g3, g4, p1, p2) !== undefined ||
+          VecMath.intersectionTest(g2, g4, p1, p2) !== undefined
+        ) {
+          gridPos.push(vec2.fromValues(i,j));
+
+        }
+
+      }
+    }
+
+    return gridPos;
+  }
+
+  selectBuildingLocations() {
+    let possible: vec2[] = [];
+    for(let i = 0; i < this.gridSize[0]; i++) {
+      for(let j = 0; j < this.gridSize[0]; j++) {
+        if(this.getBuildingSuitability(vec2.fromValues(i,j))) {
+          possible.push(vec2.fromValues(i, j));
+        }
+      }
+    }
+    let index = Math.floor(possible.length/3);
+    let advance = Math.floor(possible.length / 322);
+    for(let x = 0; x < 1000; x++) {
+      this.gridParts[possible[index][0]][possible[index][1]].hasBuilding = true;
+      index += advance;
+      index = index % possible.length;
+    }
+  }
 
 
 }

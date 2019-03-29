@@ -9,6 +9,7 @@ class TerrainPlane extends Drawable {
   indices: Uint32Array;
   positions: Float32Array;
   normals: Float32Array;
+  info: Float32Array;
   colors: Float32Array;
   scale: vec2;
   gridSize: vec2;
@@ -30,6 +31,7 @@ class TerrainPlane extends Drawable {
     this.generateIdx();
     this.generatePos();
     this.generateNor();
+    this.generateInfo();
     this.generateCol();
 
     this.count = this.indices.length;
@@ -38,6 +40,10 @@ class TerrainPlane extends Drawable {
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.bufNor);
     gl.bufferData(gl.ARRAY_BUFFER, this.normals, gl.STATIC_DRAW);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.bufInfo);
+    gl.bufferData(gl.ARRAY_BUFFER, this.info, gl.STATIC_DRAW);
+
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.bufPos);
     gl.bufferData(gl.ARRAY_BUFFER, this.positions, gl.STATIC_DRAW);
@@ -54,9 +60,10 @@ class TerrainPlane extends Drawable {
     let normalizeY: number = 1.0 / this.gridSize[1];
 
     this.positions = new Float32Array(numPoints * 4);
-    this.normals = new Float32Array(numPoints * 4);
-    this.indices = new Uint32Array(numGridSquares * 6); // NxN squares, each square is two triangles, each triangle is three indices
-    this.colors = new Float32Array(numPoints * 4);
+    this.normals   = new Float32Array(numPoints * 4);
+    this.info      = new Float32Array(numPoints * 4);
+    this.indices   = new Uint32Array(numGridSquares * 6); // NxN squares, each square is two triangles, each triangle is three indices
+    this.colors    = new Float32Array(numPoints * 4);
 
     let posIdx = 0;
     for(let x = 0; x <= this.gridSize[0]; ++x) {
@@ -64,18 +71,22 @@ class TerrainPlane extends Drawable {
 
         // Make a strip of vertices along Z with the current X coord
         this.normals  [posIdx] = 0;
+        this.info     [posIdx] = this.terrain.getBuildingSuitability(vec2.fromValues(x,z)) ? 1 : 0;
         this.colors   [posIdx] = 0;
         this.positions[posIdx++] = x * normalizeX * this.scale[0]  - this.scale[0] * 0.5;
 
         this.normals[posIdx] = 1;
+        this.info     [posIdx] = this.terrain.gridParts[x % this.gridSize[0]][z % this.gridSize[1]].hasBuilding ? 1: 0;
         this.colors[posIdx] = 0;
         this.positions[posIdx++] = this.terrain.elevations[x][z];
 
         this.normals[posIdx] = 0;
+        this.info     [posIdx] = 0;
         this.positions[posIdx++] = z * normalizeY* this.scale[1]  - this.scale[1] * 0.5;
         this.colors[posIdx] = 0;
 
         this.normals[posIdx] = this.terrain.getPopulationDensity(vec2.fromValues(x, z));
+        this.info     [posIdx] = 0;
         this.colors[posIdx] = 0;
         this.positions[posIdx++] = 1;
       }

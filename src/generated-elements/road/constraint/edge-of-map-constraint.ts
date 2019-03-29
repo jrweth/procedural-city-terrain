@@ -9,8 +9,9 @@ import {Terrain} from "../../terrain";
 export class EdgeOfMapConstraint implements Constraint {
   terrain: Terrain;
   roads: Roads;
-  constructor(options: {roads: Roads}) {
+  constructor(options: {roads: Roads, terrain: Terrain}) {
     this.roads = options.roads;
+    this.terrain = options.terrain;
   }
 
   checkConstraint(segment: Segment, endPos: vec2): boolean {

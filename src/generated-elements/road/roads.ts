@@ -1,4 +1,4 @@
-import {Intersection, LSystem} from "./lsystem";
+import {Intersection, LSystem, Segment} from "./lsystem";
 import {XReplace} from "./x-rule/x-replace";
 import {TurnTowardPopulation} from "./draw-rule/turn-toward-population";
 import {vec2} from "gl-matrix";
@@ -17,17 +17,25 @@ import Random from "../../noise/random";
 class Roads extends LSystem {
   terrain: Terrain;
   seed: number;
+  highwayRoadWidth: number = 0.5;
+  streetRoadWidth: number = 0.2;
+  streetSegmentLength: number = 8;
+  streetIterations: number  = 5;
 
   //constructor
   constructor(iterations: number, options: {
     seed: number,
     terrain: Terrain,
     highwaySegmentLength: number,
-    highwayMaxTurnAngle: number
+    highwayMaxTurnAngle: number,
+    streetSegmentLength: number,
+    streetIterations: number
   }) {
     super(options);
     this.terrain = options.terrain;
     this.seed = options.seed;
+    this.streetSegmentLength = options.streetSegmentLength;
+    this.streetIterations = options.streetIterations;
     this.initRoadSections();
 
     this.axiom = '[----FL]FL';
@@ -64,6 +72,11 @@ class Roads extends LSystem {
     });
     this.addConstraint(waterConstraint);
 
+    let edgeConstraint = new EdgeOfMapConstraint({
+      terrain: this.terrain,
+      roads: this
+    });
+    this.addConstraint(edgeConstraint);
 
 
   }
@@ -110,7 +123,7 @@ class Roads extends LSystem {
   addSegment(startIntersectionId: number, endPos: vec2, rotation: number, roadType: RoadType): ConstraintAdjustment {
     let adj: ConstraintAdjustment = super.addSegment(startIntersectionId, endPos, rotation, roadType);
     if (adj.added) {
-
+      this.terrain.addRoadSegment(this.segments.length -1);
     }
     return adj;
   }
@@ -141,22 +154,24 @@ class Roads extends LSystem {
   }
 
   addNeighborhoods(): void {
-    console.log(this.segments);
+    console.log(this.streetSegmentLength);
     this.axiom = 'FXFFXFXFFX';
     this.addXRule('X', new XReplace('[-FX][FX][+FX]'));
-    this.runExpansionIterations(5);
+    this.runExpansionIterations(this.streetIterations);
 
     let numInt = this.intersections.length;
     let numNeighborhoods = 50;
+    console.log(this.turtle);
     for(let i = 0; i < numNeighborhoods; i++) {
       let intId = Math.floor(i * numInt / numNeighborhoods);
-      this.addNeighborhood(intId, Math.PI * i / 6);
+      this.addNeighborhood(intId, i % 5 * Math.PI / 69);
     }
 
   }
 
   addNeighborhood(intersectionId: number, startDir: number) {
     this.turtle = new Turtle();
+    this.turtle.segmentLength = this.streetSegmentLength;
     this.turtle.roadType = RoadType.STREET;
     this.turtle.dir = startDir;
     this.turtle.lastIntersectionId = intersectionId;
@@ -165,6 +180,16 @@ class Roads extends LSystem {
     this.runDrawRules();
 
   }
+
+  // getSegmentSlope(segmentId: number): number {
+  //   let segment: Segment = this.segments[segmentId];
+  //   let startPos: vec2 = this.intersections[segment.startIntersectionId].pos;
+  //   let endPos: vec2 = this.intersections[segment.endIntersectionId].pos;
+  //   //handle the 0 case
+  //   if(endPos[0] == startPos[0]) return 999999999999;
+  //
+  //   return (endPos[1] - startPos[1]) /  (endPos[0] - startPos[0]);
+  // }
 
 
 }
