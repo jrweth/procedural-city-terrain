@@ -38,6 +38,7 @@ void main()
   //water
   if(vs_Pos.y < 0.4) {
      modelposition.y = 0.0;
+     fs_Pos.y = 0.4;
   }
   //sand
   else if(vs_Pos.y < 0.5) {

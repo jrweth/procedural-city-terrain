@@ -4,6 +4,7 @@ import Roads from "./road/roads";
 import {Segment} from "./road/lsystem";
 import {VecMath} from "../utils/vec-math";
 import {RoadType} from "./road/turtle";
+import {Building} from "./building/building";
 
 export enum TerrainType {
   WATER = 0,
@@ -72,6 +73,10 @@ export class Terrain {
   streetSegmentLength: number = 8;
 
   streetIterations: number = 5;
+
+  buildings: Building[] = [];
+
+  numBuildings: number = 1000;
 
   init() {
     this.initElevations();
@@ -387,8 +392,12 @@ export class Terrain {
     return gridPos;
   }
 
+  /**
+   * set the building locations
+   */
   selectBuildingLocations() {
     let possible: vec2[] = [];
+    //get the possible building locations
     for(let i = 0; i < this.gridSize[0]; i++) {
       for(let j = 0; j < this.gridSize[0]; j++) {
         if(this.getBuildingSuitability(vec2.fromValues(i,j))) {
@@ -398,11 +407,18 @@ export class Terrain {
     }
     let index = Math.floor(possible.length/3);
     let advance = Math.floor(possible.length / 322);
-    for(let x = 0; x < 1000; x++) {
-      this.gridParts[possible[index][0]][possible[index][1]].hasBuilding = true;
+    for(let x = 0; x < this.numBuildings; x++) {
+      let gridPart: GridPart = this.gridParts[possible[index][0]][possible[index][1]];
+      gridPart.hasBuilding = true;
+      this.buildings.push(new Building({
+        pos: vec2.fromValues(possible[index][0], possible[index][1]),
+        dir: 0,
+        footprint: vec3.fromValues(1, 2 + gridPart.avgDensity * 40, 1)
+      }));
       index += advance;
       index = index % possible.length;
     }
+
   }
 
 

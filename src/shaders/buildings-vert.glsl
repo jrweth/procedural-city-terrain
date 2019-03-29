@@ -32,10 +32,11 @@ void main()
 {
     fs_Pos = vs_Pos.xyz;
     fs_Translate = vs_Translate;
-    vec4 modelposition = vec4(vs_Pos.x, 0.501, vs_Pos.z, 1.0);
+    vec4 modelposition = vec4(vs_Pos.x, vs_Pos.y, vs_Pos.z, 1.0);
    //scale by width and height
     modelposition.x = modelposition.x * vs_Col.x; //vs_Col.x = length
-    modelposition.z = modelposition.z * vs_Col.y; //vs_Col.y = width;
+    modelposition.y = modelposition.y * vs_Col.y; //vs_Col.x = heigth
+    modelposition.z = modelposition.z * vs_Col.z; //vs_Col.y = width;
 
     //fs_Pos.y = vs_Pos.y * vs_Col.y;
 

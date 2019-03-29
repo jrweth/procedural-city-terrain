@@ -16,15 +16,17 @@ out vec4 out_Col; // This is the final output color that you will see on your
 void main()
 {
 
-    vec3 roadColor = vec3(0.0, 0.0, 0.0);
-
-    //stripes in the road
-    if(abs(fs_Pos.z) < 0.1) {
-       roadColor = vec3(1.0, 1.0, 0.0);
+    vec3 buildingColor = vec3(0.9, 0.9, 0.9);
+    if(fs_Pos.x > 0.99) {
+        buildingColor = vec3(0.0, 0.0, 0.0);
+    }
+    else if(fs_Pos.z < 0.01) {
+        buildingColor = vec3(0.3, 0.3, 0.3);
+    }
+    else if(fs_Pos.z > 0.99) {
+        buildingColor = vec3(0.6, 0.6, 0.6);
     }
 
-    roadColor = vec3(1.0, 0.0, 0.0);
-
     float t = clamp(smoothstep(40.0, 50.0, length(fs_Translate.xz)), 0.0, 1.0); // Distance fog
-    out_Col = vec4(mix(roadColor, vec3(164.0 / 255.0, 233.0 / 255.0, 1.0), t), 1.0);
+    out_Col = vec4(mix(buildingColor, vec3(164.0 / 255.0, 233.0 / 255.0, 1.0), t), 1.0);
 }

@@ -2,6 +2,7 @@ import {vec2, vec3, vec4} from 'gl-matrix';
 import * as Stats from 'stats-js';
 import * as DAT from 'dat-gui';
 import Square from './geometry/Square';
+import Cube from './geometry/Cube';
 import TerrainPlane from './geometry/TerrainPlane';
 import OpenGLRenderer from './rendering/gl/OpenGLRenderer';
 import Camera from './Camera';
@@ -16,6 +17,7 @@ import RoadSegments from "./geometry/RoadSegments";
 const controls = {
   'Show Roads': true,
   'Show Population Density': true,
+  'Show Buildings': true,
 
   'Elevation Seed': 1.234,
   'Population Seed': 1.234,
@@ -26,6 +28,8 @@ const controls = {
   'Highway Max Turn Angle': Math.PI / 18,
   'Street Segment Length': 8,
   'Street Iterations': 5,
+
+  'Num Buildings': 1000,
   'Load Scene': loadScene, // A function pointer, essentially
 };
 // Add controls to the gui
@@ -34,8 +38,8 @@ gui.width = 320;
 
 
 let terrain: Terrain;
-let roads: Roads;
 let square: Square;
+let cube: Cube;
 let plane : TerrainPlane;
 let roadSegments: RoadSegments;
 let wPressed: boolean;
@@ -56,6 +60,7 @@ function loadScene() {
   terrain.highwaySegmentLength = controls["Highway Segment Length"];
   terrain.streetSegmentLength = controls["Street Segment Length"];
   terrain.streetIterations = controls["Street Iterations"];
+  terrain.numBuildings = controls["Num Buildings"];
   terrain.init();
 
   //create the plane geometry
@@ -69,6 +74,14 @@ function loadScene() {
   );
   roadSegments.create();
   roadSegments.setInstanceVBOs(terrain.roads.segments, terrain.roads.intersections);
+
+  //create the building geometry
+  cube = new Cube({
+    gridSize: terrain.gridSize,
+    scale: plane.scale
+  });
+  cube.create();
+  cube.setInstanceVBOs(terrain.buildings);
 
   square = new Square(vec3.fromValues(0, 0, 0));
   square.create();
@@ -142,6 +155,16 @@ function addRoadControls() {
   rAngle.onChange(loadScene);
   sIter.onChange(loadScene);
   sLength.onChange(loadScene);
+}
+
+
+
+function addBuildingControls() {
+  let buildingFolder = gui.addFolder('building');
+  let eSeed = buildingFolder.add(controls, 'Num Buildings', [10,100,1000, 2000, 4000]).listen();
+  eSeed.onChange(loadScene);
+
+  // mapType.onChange();
 }
 
 
@@ -220,9 +243,9 @@ function main() {
     new Shader(gl.FRAGMENT_SHADER, require('./shaders/roads-frag.glsl')),
   ]);
 
-  const flat = new ShaderProgram([
-    new Shader(gl.VERTEX_SHADER, require('./shaders/flat-vert.glsl')),
-    new Shader(gl.FRAGMENT_SHADER, require('./shaders/flat-frag.glsl')),
+  const buildingShader = new ShaderProgram([
+    new Shader(gl.VERTEX_SHADER, require('./shaders/buildings-vert.glsl')),
+    new Shader(gl.FRAGMENT_SHADER, require('./shaders/buildings-frag.glsl')),
   ]);
 
   terrainShader.setDisplayOptions(vec4.fromValues(1,0,0,0))
@@ -231,6 +254,7 @@ function main() {
   addDisplayControls({terrainShader: terrainShader});
   addTerrainControls();
   addRoadControls();
+  addBuildingControls();
 
   /**
    * more control stuff
@@ -269,9 +293,10 @@ function main() {
       plane
     ]);
     if(controls["Show Roads"]) {
-      renderer.render(camera, roadShader,
-        [roadSegments]
-      );
+      renderer.render(camera, roadShader, [roadSegments]);
+    }
+    if(controls["Show Buildings"]) {
+      renderer.render(camera, buildingShader, [cube]);
     }
     stats.end();
 
