@@ -2,6 +2,7 @@ import {vec2, vec3} from "gl-matrix";
 import {Shape} from "./shape/shape";
 import {Box} from "./shape/box";
 import {Block, BlockType} from "./shape/block";
+import {Pyramid} from "./shape/pyramid";
 
 
 export class Building {
@@ -20,11 +21,13 @@ export class Building {
     this.pos = options.pos;
     this.footprint = options.footprint;
     this.rotation = options.rotation;
-    this.shapes = [new Box({
-      footprint: this.footprint,
-      pos: this.pos,
-      rotation: this.rotation
-    })];
+    this.shapes = [
+      new Pyramid({
+        footprint: this.footprint,
+        pos: this.pos,
+        rotation: this.rotation
+      })
+    ];
   }
 
   getBlocks(): Block[] {

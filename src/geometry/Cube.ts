@@ -4,6 +4,7 @@ import {vec2, vec3} from "gl-matrix";
 import {Intersection, Segment} from "../generated-elements/road/lsystem";
 import {RoadType} from "../generated-elements/road/turtle";
 import {Building} from "../generated-elements/building/building";
+import {Block, BlockType} from "../generated-elements/building/shape/block";
 
 class Cube extends Drawable {
   indices: Uint32Array;
@@ -13,6 +14,7 @@ class Cube extends Drawable {
   colors: Float32Array;
   scale: vec2;
   gridSize: vec2;
+  blockInfo: Float32Array;
 
   constructor(options: {scale: vec2, gridSize: vec2}) {
     super(); // Call the constructor of the super class. This is required.
@@ -145,36 +147,59 @@ class Cube extends Drawable {
   setInstanceVBOs(buildings: Building[]) {
     this.generateTranslate();
     this.generateCol();
+    this.generateBlockInfo();
 
     let offsets: number[] = [];
-    let colors: number[] = [];
+    let colors: number[] = []; //set to footprint
+    let blockInfo: number[] = [];
 
-    this.numInstances = buildings.length;
+    this.numInstances = 0;
 
-    console.log(buildings);
     for(let i = 0; i < buildings.length; i++) {
-      let startPos: vec3 = buildings[i].pos;
-      let startPosScreen = this.gridPosToScreenPos(startPos);
+      let blocks: Block[] = buildings[i].getBlocks();
+      for(let j = 0; j < blocks.length; j++) {
+        let block: Block = blocks[j];
 
-      offsets.push(startPosScreen[0], 0, startPosScreen[1], 0);
-      colors.push(
-        buildings[i].footprint[0] * this.scale[0] / this.gridSize[0],
-        buildings[i].footprint[1] * this.scale[0] / this.gridSize[0],
-        buildings[i].footprint[2] * this.scale[1] / this.gridSize[1],
-        buildings[i].rotation
-      );
+        if(block.blockType == BlockType.CUBE
+          || block.blockType == BlockType.PYRAMID
+        ) {
+          this.numInstances++;
+          let startPos: vec3 = block.pos;
+          let startPosScreen = this.gridPosToScreenPos(startPos);
+
+          offsets.push(startPosScreen[0], 0, startPosScreen[1], 0);
+          colors.push(
+            block.footprint[0] * this.scale[0] / this.gridSize[0],
+            block.footprint[1] * this.scale[0] / this.gridSize[0],
+            block.footprint[2] * this.scale[1] / this.gridSize[1],
+            block.rotation
+          );
+          blockInfo.push(
+            block.blockType,
+            block.rotation,
+            block.adjustScaleBottom,
+            block.adjustScaleTop
+          )
+
+        }
+
+      }
     }
-    console.log(offsets);
-    console.log(colors);
 
     this.offsets = new Float32Array(offsets);
     this.colors = new Float32Array(colors);
+    this.blockInfo = new Float32Array(blockInfo);
+
+    console.log(blockInfo);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.bufTranslate);
     gl.bufferData(gl.ARRAY_BUFFER, this.offsets, gl.STATIC_DRAW);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.bufCol);
     gl.bufferData(gl.ARRAY_BUFFER, this.colors, gl.STATIC_DRAW);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.bufBlockInfo);
+    gl.bufferData(gl.ARRAY_BUFFER, this.blockInfo, gl.STATIC_DRAW);
 
   }
 };

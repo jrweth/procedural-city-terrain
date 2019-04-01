@@ -10,11 +10,15 @@ in vec4 vs_Pos;
 in vec4 vs_Nor;
 in vec4 vs_Col;
 in vec4 vs_Translate;
+in vec4 vs_BlockInfo;
 
 out vec3 fs_Pos;
 out vec4 fs_Nor;
 out vec4 fs_Col;
 out vec4 fs_Translate;
+
+const float CUBE = 1.0;
+const float PYRAMID = 3.0;
 
 float random1( vec2 p , vec2 seed) {
   return fract(sin(dot(p + seed, vec2(127.1, 311.7))) * 43758.5453);
@@ -28,11 +32,45 @@ vec2 random2( vec2 p , vec2 seed) {
   return fract(sin(vec2(dot(p + seed, vec2(311.7, 127.1)), dot(p + seed, vec2(269.5, 183.3)))) * 85734.3545);
 }
 
+
+float getVertexNum() {
+   if(vs_BlockInfo.x == CUBE
+     || vs_BlockInfo.x == PYRAMID
+   ) {
+       return vs_Pos.x + vs_Pos.z * 2.0 + vs_Pos.y * 4.0;
+   }
+
+   return 0.0;
+}
+
+vec3 getCubeVertexPosition() {
+    float vertexNum = getVertexNum();
+    //scale bottom toward middle
+    if(vertexNum < 4.0) {
+        return mix(vec3(0.5, 0, 0.5), vs_Pos.xyz, vs_BlockInfo[2]);
+    }
+    //scale top toward middle
+    else {
+        return mix(vec3(0.5, 1.0, 0.5), vs_Pos.xyz, vs_BlockInfo[3]);
+    }
+}
+
+
+vec3 getVertexPosition() {
+    if(vs_BlockInfo[0] == CUBE
+      || vs_BlockInfo[0] == PYRAMID
+    ) {
+        return getCubeVertexPosition();
+    }
+    return vs_Pos.xyz;
+}
+
+
 void main()
 {
     fs_Pos = vs_Pos.xyz;
     fs_Translate = vs_Translate;
-    vec4 modelposition = vec4(vs_Pos.x, vs_Pos.y, vs_Pos.z, 1.0);
+    vec4 modelposition = vec4(getVertexPosition(), 1.0);
    //scale by width and height
     modelposition.x = modelposition.x * vs_Col.x; //vs_Col.x = length
     modelposition.y = modelposition.y * vs_Col.y; //vs_Col.x = heigth
