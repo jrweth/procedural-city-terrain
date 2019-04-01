@@ -1,29 +1,40 @@
 import {vec2, vec3} from "gl-matrix";
+import {Shape} from "./shape/shape";
+import {Box} from "./shape/box";
+import {Block, BlockType} from "./shape/block";
 
-export class Block {
-
-}
-
-export class Shape {
-  symbol: string;
-}
 
 export class Building {
-  pos: vec2;
+  pos: vec3;
   footprint: vec3;
-  dir: number
-  blocks: Block[][][];
-  axium: 'B';
+  rotation: number;
+  shapes: Shape[];
+  seed: number;
+
 
   constructor(options: {
-    pos: vec2,
+    pos: vec3,
     footprint: vec3,
-    dir: number
+    rotation: number
   }) {
     this.pos = options.pos;
     this.footprint = options.footprint;
-    this.dir = options.dir;
+    this.rotation = options.rotation;
+    this.shapes = [new Box({
+      footprint: this.footprint,
+      pos: this.pos,
+      rotation: this.rotation
+    })];
   }
+
+  getBlocks(): Block[] {
+    let blocks: Block[] = [];
+    for(let i = 0; i < this.shapes.length; i++) {
+      blocks = blocks.concat(this.shapes[i].getBlocks());
+    }
+    return blocks;
+  }
+
 
 
 

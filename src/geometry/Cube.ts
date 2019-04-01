@@ -1,6 +1,6 @@
 import {gl} from '../globals';
 import Drawable from "../rendering/gl/Drawable";
-import {vec2} from "gl-matrix";
+import {vec2, vec3} from "gl-matrix";
 import {Intersection, Segment} from "../generated-elements/road/lsystem";
 import {RoadType} from "../generated-elements/road/turtle";
 import {Building} from "../generated-elements/building/building";
@@ -134,10 +134,11 @@ class Cube extends Drawable {
     console.log(`Created Cube`);
   }
 
-  gridPosToScreenPos(gridPos: vec2) {
-    let screenPos: vec2 = vec2.create();
+  gridPosToScreenPos(gridPos: vec3): vec3 {
+    let screenPos: vec3 = vec3.create();
     screenPos[0] = gridPos[0] * this.scale[0] / this.gridSize[0] - this.scale[0] * 0.5;
-    screenPos[1] = gridPos[1] * this.scale[1] / this.gridSize[1] - this.scale[1] * 0.5;
+    screenPos[1] = 0;
+    screenPos[2] = gridPos[2] * this.scale[2] / this.gridSize[2] - this.scale[2] * 0.5;
     return screenPos;
   }
 
@@ -150,8 +151,9 @@ class Cube extends Drawable {
 
     this.numInstances = buildings.length;
 
+    console.log(buildings);
     for(let i = 0; i < buildings.length; i++) {
-      let startPos: vec2 = buildings[i].pos;
+      let startPos: vec3 = buildings[i].pos;
       let startPosScreen = this.gridPosToScreenPos(startPos);
 
       offsets.push(startPosScreen[0], 0, startPosScreen[1], 0);
@@ -159,9 +161,11 @@ class Cube extends Drawable {
         buildings[i].footprint[0] * this.scale[0] / this.gridSize[0],
         buildings[i].footprint[1] * this.scale[0] / this.gridSize[0],
         buildings[i].footprint[2] * this.scale[1] / this.gridSize[1],
-        buildings[i].dir
+        buildings[i].rotation
       );
     }
+    console.log(offsets);
+    console.log(colors);
 
     this.offsets = new Float32Array(offsets);
     this.colors = new Float32Array(colors);

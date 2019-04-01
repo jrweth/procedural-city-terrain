@@ -407,17 +407,24 @@ export class Terrain {
     }
     let index = Math.floor(possible.length/3);
     let advance = Math.floor(possible.length / 322);
-    for(let x = 0; x < this.numBuildings; x++) {
-      let gridPart: GridPart = this.gridParts[possible[index][0]][possible[index][1]];
-      gridPart.hasBuilding = true;
-      this.buildings.push(new Building({
-        pos: vec2.fromValues(possible[index][0], possible[index][1]),
-        dir: 0,
-        footprint: vec3.fromValues(1, 2 + gridPart.avgDensity * 40, 1)
-      }));
-      index += advance;
-      index = index % possible.length;
-    }
+    // for(let x = 0; x < this.numBuildings; x++) {
+    //   let gridPart: GridPart = this.gridParts[possible[index][0]][possible[index][1]];
+    //   gridPart.hasBuilding = true;
+    //   this.buildings.push(new Building({
+    //     pos: vec3.fromValues(possible[index][0], 0.5, possible[index][1]),
+    //     rotation: 0,
+    //     footprint: vec3.fromValues(1, 2 + gridPart.avgDensity * 40, 1)
+    //   }));
+    //   index += advance;
+    //   index = index % possible.length;
+    // }
+    this.buildings.push(new Building({
+      pos: vec3.fromValues(0, 0.5, 250),
+      rotation: 0,
+      footprint: vec3.fromValues(50, 50, 50)
+    }));
+
+
 
   }
 
