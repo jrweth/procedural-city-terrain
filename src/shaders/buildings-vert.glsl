@@ -18,7 +18,10 @@ out vec4 fs_Col;
 out vec4 fs_Translate;
 
 const float CUBE = 1.0;
-const float PYRAMID = 3.0;
+const float PYRAMID = 2.0;
+const float TENT = 3.0;
+const float TRI_TUBE = 4.0;
+const float QUARTER_PYRAMID = 5.0;
 
 float random1( vec2 p , vec2 seed) {
   return fract(sin(dot(p + seed, vec2(127.1, 311.7))) * 43758.5453);
@@ -34,9 +37,7 @@ vec2 random2( vec2 p , vec2 seed) {
 
 
 float getVertexNum() {
-   if(vs_BlockInfo.x == CUBE
-     || vs_BlockInfo.x == PYRAMID
-   ) {
+   if(vs_BlockInfo.x < 10.0 ) {
        return vs_Pos.x + vs_Pos.z * 2.0 + vs_Pos.y * 4.0;
    }
 
@@ -55,6 +56,49 @@ vec3 getCubeVertexPosition() {
     }
 }
 
+vec3 getTentVertexPosition() {
+    float vertexNum = getVertexNum();
+    //scale bottom toward middle
+    if(vertexNum < 4.0) {
+        return mix(vec3(0.5, 0, 0.5), vs_Pos.xyz, vs_BlockInfo[2]);
+    }
+    //scale top toward middle
+    else {
+        return mix(vec3(0.5, vs_Pos[1], vs_Pos[2]), vs_Pos.xyz, vs_BlockInfo[3]);
+    }
+}
+
+vec3 getTriTubeVertexPosition() {
+    float vertexNum = getVertexNum();
+    //scale bottom toward middle
+    if(vertexNum < 3.0) {
+        return mix(vec3(0.0, 0.0, 0.0), vs_Pos.xyz, vs_BlockInfo[2]);
+    }
+    else if(vertexNum == 3.0) {
+        return mix(vec3(0.0, 0, 0.0), vec3(0.5, 0.0, 0.5), vs_BlockInfo[2]);
+    }
+    else if(vertexNum < 7.0) {
+        return mix(vec3(0.0, 1.0, 0.0), vs_Pos.xyz, vs_BlockInfo[3]);
+    }
+    else { //vertex num = 7
+        return mix(vec3(0.0, 1.0, 0.0), vec3(0.5, 1.0, 0.5), vs_BlockInfo[3]);
+    }
+}
+
+vec3 getQuarterPyramidVertexPosition() {
+    float vertexNum = getVertexNum();
+    //scale bottom toward middle
+    if(vertexNum < 4.0) {
+        return mix(vec3(0.0, 0.0, 0.0), vs_Pos.xyz, vs_BlockInfo[2]);
+    }
+    else if(vertexNum < 7.0) {
+        return mix(vec3(0.0, 1.0, 0.0), vs_Pos.xyz, vs_BlockInfo[3]);
+    }
+    else {
+        return mix(vec3(0.0, 1.0, 0.0), vec3(0.5, 1.0, 0.5), vs_BlockInfo[3]);
+    }
+}
+
 
 vec3 getVertexPosition() {
     if(vs_BlockInfo[0] == CUBE
@@ -62,6 +106,9 @@ vec3 getVertexPosition() {
     ) {
         return getCubeVertexPosition();
     }
+    else if (vs_BlockInfo[0] == TENT) return getTentVertexPosition();
+    else if (vs_BlockInfo[0] == TRI_TUBE) return getTriTubeVertexPosition();
+    else if (vs_BlockInfo[0] == QUARTER_PYRAMID) return getQuarterPyramidVertexPosition();
     return vs_Pos.xyz;
 }
 
@@ -79,8 +126,8 @@ void main()
     //fs_Pos.y = vs_Pos.y * vs_Col.y;
 
     //rotate
-    float s = sin(vs_Col.z);
-    float c = cos(vs_Col.z);
+    float s = sin(vs_Col.w);
+    float c = cos(vs_Col.w);
     modelposition.xz = mat2(c, s, -s, c) * modelposition.xz;
 
     //translate

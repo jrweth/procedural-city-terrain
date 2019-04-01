@@ -2,8 +2,11 @@ import {vec3} from "gl-matrix";
 
 export enum BlockType  {
   'CUBE' = 1, //standard cube
-  'QUARTER_ROUND' = 2,//standard quarter round
-  'PYRAMID' = 3 //a pyramid
+  'PYRAMID' = 2, //a pyramid
+  'TENT' = 3, //tent
+  'TRI_TUBE' = 4,
+  'QUARTER_PYRAMID' = 5,
+  'QUARTER_ROUND' = 10//standard quarter round
 };
 
 

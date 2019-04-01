@@ -1,8 +1,6 @@
 import {gl} from '../globals';
 import Drawable from "../rendering/gl/Drawable";
 import {vec2, vec3} from "gl-matrix";
-import {Intersection, Segment} from "../generated-elements/road/lsystem";
-import {RoadType} from "../generated-elements/road/turtle";
 import {Building} from "../generated-elements/building/building";
 import {Block, BlockType} from "../generated-elements/building/shape/block";
 
@@ -162,6 +160,9 @@ class Cube extends Drawable {
 
         if(block.blockType == BlockType.CUBE
           || block.blockType == BlockType.PYRAMID
+          || block.blockType == BlockType.TENT
+          || block.blockType == BlockType.TRI_TUBE
+          || block.blockType == BlockType.QUARTER_PYRAMID
         ) {
           this.numInstances++;
           let startPos: vec3 = block.pos;

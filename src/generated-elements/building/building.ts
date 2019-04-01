@@ -3,6 +3,7 @@ import {Shape} from "./shape/shape";
 import {Box} from "./shape/box";
 import {Block, BlockType} from "./shape/block";
 import {Pyramid} from "./shape/pyramid";
+import {Sample} from "./shape/sample";
 
 
 export class Building {
@@ -22,11 +23,11 @@ export class Building {
     this.footprint = options.footprint;
     this.rotation = options.rotation;
     this.shapes = [
-      new Pyramid({
+      new Sample({
         footprint: this.footprint,
         pos: this.pos,
         rotation: this.rotation
-      })
+      }),
     ];
   }
 
