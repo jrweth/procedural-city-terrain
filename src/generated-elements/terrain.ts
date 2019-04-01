@@ -419,7 +419,7 @@ export class Terrain {
     //   index = index % possible.length;
     // }
     this.buildings.push(new Building({
-      pos: vec3.fromValues(0, 0.5, 250),
+      pos: vec3.fromValues(250, 0.5, 250),
       rotation: 0,
       footprint: vec3.fromValues(50, 50, 50)
     }));
