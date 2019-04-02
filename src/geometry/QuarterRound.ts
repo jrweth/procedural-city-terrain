@@ -4,7 +4,7 @@ import {vec2, vec3} from "gl-matrix";
 import {Building} from "../generated-elements/building/building";
 import {Block, BlockType} from "../generated-elements/building/shape/block";
 
-class Cube extends Drawable {
+class QuarterRound extends Drawable {
   indices: Uint32Array;
   positions: Float32Array;
   normals: Float32Array;
@@ -24,40 +24,40 @@ class Cube extends Drawable {
 
     this.positions = new Float32Array([
       //left
-      -0.5, -0.5, -0.5, 1,
-      -0.5, -0.5,  0.5, 1,
-      -0.5,  0.5, -0.5, 1,
-      -0.5,  0.5,  0.5, 1,
+      0, 0, 0, 1,
+      0, 0,  1, 1,
+      0,  1, 0, 1,
+      0,  1,  1, 1,
 
       //right
-      0.5, -0.5, -0.5, 1,
-      0.5, -0.5,  0.5, 1,
-      0.5,  0.5, -0.5, 1,
-      0.5,  0.5,  0.5, 1,
+      1, 0, 0, 1,
+      1, 0,  1, 1,
+      1,  1, 0, 1,
+      1,  1,  1, 1,
 
       //top
-      -0.5,  0.5, -0.5, 1,
-      -0.5,  0.5,  0.5, 1,
-      0.5,  0.5, -0.5, 1,
-      0.5,  0.5,  0.5, 1,
+      0,  1, 0, 1,
+      0,  1,  1, 1,
+      1,  1, 0, 1,
+      1,  1,  1, 1,
 
       //bottom
-      -0.5, -0.5, -0.5, 1,
-      -0.5, -0.5,  0.5, 1,
-      0.5,  -0.5, -0.5, 1,
-      0.5,  -0.5,  0.5, 1,
+      0, 0, 0, 1,
+      0, 0,  1, 1,
+      1,  0, 0, 1,
+      1,  0,  1, 1,
 
       //back
-      -0.5, -0.5, -0.5, 1,
-      -0.5,  0.5, -0.5, 1,
-      0.5, -0.5, -0.5, 1,
-      0.5,  0.5, -0.5, 1,
+      0, 0, 0, 1,
+      0,  1, 0, 1,
+      1, 0, 0, 1,
+      1,  1, 0, 1,
 
       //front
-      -0.5, -0.5, 0.5, 1,
-      -0.5,  0.5, 0.5, 1,
-      0.5, -0.5, 0.5, 1,
-      0.5,  0.5, 0.5, 1
+      0, 0, 1, 1,
+      0,  1, 1, 1,
+      1, 0, 1, 1,
+      1,  1, 1, 1
     ]);
     this.indices = new Uint32Array([
       //left side
@@ -116,9 +116,9 @@ class Cube extends Drawable {
     // this.indices = new Uint32Array([0, 1, 2,
     //   1, 3, 2]);
     // this.positions = new Float32Array([
-    //   0, 0.6, -0.5,, 1,
+    //   0, 0.6, -0.5, 1,
     //   0, 0.6, 0.5,  1,
-    //   1, 0.6, -0.5,, 1,
+    //   1, 0.6, -0.5, 1,
     //   1, 0.6, 0.5,  1]);
 
     this.generateIdx();
@@ -205,4 +205,4 @@ class Cube extends Drawable {
   }
 };
 
-export default Cube;
+export default QuarterRound;

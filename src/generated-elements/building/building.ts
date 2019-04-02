@@ -23,7 +23,7 @@ export class Building {
     this.footprint = options.footprint;
     this.rotation = options.rotation;
     this.shapes = [
-      new Sample({
+      new Box({
         footprint: this.footprint,
         pos: this.pos,
         rotation: this.rotation

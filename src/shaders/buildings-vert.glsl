@@ -38,7 +38,7 @@ vec2 random2( vec2 p , vec2 seed) {
 
 float getVertexNum() {
    if(vs_BlockInfo.x < 10.0 ) {
-       return vs_Pos.x + vs_Pos.z * 2.0 + vs_Pos.y * 4.0;
+       return vs_Pos.x + 0.5 + (vs_Pos.z + 0.5) * 2.0 + (vs_Pos.y + 0.5) * 4.0;
    }
 
    return 0.0;
@@ -48,11 +48,11 @@ vec3 getCubeVertexPosition() {
     float vertexNum = getVertexNum();
     //scale bottom toward middle
     if(vertexNum < 4.0) {
-        return mix(vec3(0.5, 0, 0.5), vs_Pos.xyz, vs_BlockInfo[2]);
+        return mix(vec3(0.0, -0.5, 0.0), vs_Pos.xyz, vs_BlockInfo[2]);
     }
     //scale top toward middle
     else {
-        return mix(vec3(0.5, 1.0, 0.5), vs_Pos.xyz, vs_BlockInfo[3]);
+        return mix(vec3(0.0, 0.5, 0.0), vs_Pos.xyz, vs_BlockInfo[3]);
     }
 }
 
@@ -60,11 +60,11 @@ vec3 getTentVertexPosition() {
     float vertexNum = getVertexNum();
     //scale bottom toward middle
     if(vertexNum < 4.0) {
-        return mix(vec3(0.5, 0, 0.5), vs_Pos.xyz, vs_BlockInfo[2]);
+        return mix(vec3(0.0, -0.5, 0.0), vs_Pos.xyz, vs_BlockInfo[2]);
     }
     //scale top toward middle
     else {
-        return mix(vec3(0.5, vs_Pos[1], vs_Pos[2]), vs_Pos.xyz, vs_BlockInfo[3]);
+        return mix(vec3(0.0, vs_Pos[1], vs_Pos[2]), vs_Pos.xyz, vs_BlockInfo[3]);
     }
 }
 
@@ -72,16 +72,16 @@ vec3 getTriTubeVertexPosition() {
     float vertexNum = getVertexNum();
     //scale bottom toward middle
     if(vertexNum < 3.0) {
-        return mix(vec3(0.0, 0.0, 0.0), vs_Pos.xyz, vs_BlockInfo[2]);
+        return mix(vec3(-0.5, -0.5, -0.5), vs_Pos.xyz, vs_BlockInfo[2]);
     }
     else if(vertexNum == 3.0) {
-        return mix(vec3(0.0, 0, 0.0), vec3(0.5, 0.0, 0.5), vs_BlockInfo[2]);
+        return mix(vec3(-0.5, -0.5, -0.5), vec3(0, -0.5, 0), vs_BlockInfo[2]);
     }
     else if(vertexNum < 7.0) {
-        return mix(vec3(0.0, 1.0, 0.0), vs_Pos.xyz, vs_BlockInfo[3]);
+        return mix(vec3(-0.5, 0.5, -0.5), vs_Pos.xyz, vs_BlockInfo[3]);
     }
     else { //vertex num = 7
-        return mix(vec3(0.0, 1.0, 0.0), vec3(0.5, 1.0, 0.5), vs_BlockInfo[3]);
+        return mix(vec3(-0.5, 0.5, -0.5), vec3(0, 0.5, 0), vs_BlockInfo[3]);
     }
 }
 
@@ -89,13 +89,13 @@ vec3 getQuarterPyramidVertexPosition() {
     float vertexNum = getVertexNum();
     //scale bottom toward middle
     if(vertexNum < 4.0) {
-        return mix(vec3(0.0, 0.0, 0.0), vs_Pos.xyz, vs_BlockInfo[2]);
+        return mix(vec3(-0.5, -0.5, -0.5), vs_Pos.xyz, vs_BlockInfo[2]);
     }
     else if(vertexNum < 7.0) {
-        return mix(vec3(0.0, 1.0, 0.0), vs_Pos.xyz, vs_BlockInfo[3]);
+        return mix(vec3(-0.5, 0.5, -0.5), vs_Pos.xyz, vs_BlockInfo[3]);
     }
     else {
-        return mix(vec3(0.0, 1.0, 0.0), vec3(0.5, 1.0, 0.5), vs_BlockInfo[3]);
+        return mix(vec3(-0.5, 0.5, -0.5), vec3(0, 0.5, 0), vs_BlockInfo[3]);
     }
 }
 
