@@ -5,6 +5,7 @@ import {Segment} from "./road/lsystem";
 import {VecMath} from "../utils/vec-math";
 import {RoadType} from "./road/turtle";
 import {Building} from "./building/building";
+import Random from "../noise/random";
 
 export enum TerrainType {
   WATER = 0,
@@ -77,6 +78,8 @@ export class Terrain {
   buildings: Building[] = [];
 
   numBuildings: number = 1000;
+
+  buildingSeed: number = 1;
 
   init() {
     this.initElevations();
@@ -407,24 +410,18 @@ export class Terrain {
     }
     let index = Math.floor(possible.length/3);
     let advance = Math.floor(possible.length / 322);
-    // for(let x = 0; x < this.numBuildings; x++) {
-    //   let gridPart: GridPart = this.gridParts[possible[index][0]][possible[index][1]];
-    //   gridPart.hasBuilding = true;
-    //   this.buildings.push(new Building({
-    //     pos: vec3.fromValues(possible[index][0], 0.5, possible[index][1]),
-    //     rotation: 0,
-    //     footprint: vec3.fromValues(1, 2 + gridPart.avgDensity * 40, 1)
-    //   }));
-    //   index += advance;
-    //   index = index % possible.length;
-    // }
-    this.buildings.push(new Building({
-      pos: vec3.fromValues(250, 0.5, 250),
-      rotation: 0,
-      footprint: vec3.fromValues(50, 50, 50)
-    }));
-
-
+    for(let x = 0; x < this.numBuildings; x++) {
+      let gridPart: GridPart = this.gridParts[possible[index][0]][possible[index][1]];
+      gridPart.hasBuilding = true;
+      this.buildings.push(new Building({
+        pos: vec3.fromValues(possible[index][0], 2.0, possible[index][1]),
+        rotation: 0,
+        footprint: vec3.fromValues(2, 2 + gridPart.avgDensity * 80, 2),
+        seed: Random.random2to1(possible[index], vec2.fromValues(this.buildingSeed, 2.2))
+      }));
+      index += advance;
+      index = index % possible.length;
+    }
 
   }
 

@@ -22,7 +22,12 @@ class Random {
   //mix two number toget
   static mix(a: number, b: number, ratio: number): number {
     return a + ((b - a) * (ratio));
+  }
 
+  //chose a random int between 0 and the max number
+  static randomInt(max: number, seed: number) {
+    let num = this.random1to1(2.3, vec2.fromValues(seed, 12.65));
+    return Math.floor(num * (max + 1));
   }
 
 

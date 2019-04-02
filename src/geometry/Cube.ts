@@ -24,40 +24,40 @@ class Cube extends Drawable {
 
     this.positions = new Float32Array([
       //left
-      -0.5, -0.5, -0.5, 1,
-      -0.5, -0.5,  0.5, 1,
-      -0.5,  0.5, -0.5, 1,
-      -0.5,  0.5,  0.5, 1,
+      -0.5,  0.0, -0.5, 1,
+      -0.5,  0.0,  0.5, 1,
+      -0.5,  1.0, -0.5, 1,
+      -0.5,  1.0,  0.5, 1,
 
       //right
-      0.5, -0.5, -0.5, 1,
-      0.5, -0.5,  0.5, 1,
-      0.5,  0.5, -0.5, 1,
-      0.5,  0.5,  0.5, 1,
+      0.5,  0.0, -0.5, 1,
+      0.5,  0.0,  0.5, 1,
+      0.5,  1.0, -0.5, 1,
+      0.5,  1.0,  0.5, 1,
 
       //top
-      -0.5,  0.5, -0.5, 1,
-      -0.5,  0.5,  0.5, 1,
-      0.5,  0.5, -0.5, 1,
-      0.5,  0.5,  0.5, 1,
+      -0.5,  1.0, -0.5, 1,
+      -0.5,  1.0,  0.5, 1,
+      0.5,   1.0, -0.5, 1,
+      0.5,   1.0,  0.5, 1,
 
       //bottom
-      -0.5, -0.5, -0.5, 1,
-      -0.5, -0.5,  0.5, 1,
-      0.5,  -0.5, -0.5, 1,
-      0.5,  -0.5,  0.5, 1,
+      -0.5,  0.0, -0.5, 1,
+      -0.5,  0.0,  0.5, 1,
+      0.5,   0.0, -0.5, 1,
+      0.5,   0.0,  0.5, 1,
 
       //back
-      -0.5, -0.5, -0.5, 1,
-      -0.5,  0.5, -0.5, 1,
-      0.5, -0.5, -0.5, 1,
-      0.5,  0.5, -0.5, 1,
+      -0.5,  0.0, -0.5, 1,
+      -0.5,  1.0, -0.5, 1,
+      0.5,   0.0, -0.5, 1,
+      0.5,   1.0, -0.5, 1,
 
       //front
-      -0.5, -0.5, 0.5, 1,
-      -0.5,  0.5, 0.5, 1,
-      0.5, -0.5, 0.5, 1,
-      0.5,  0.5, 0.5, 1
+      -0.5,  0.0, 0.5, 1,
+      -0.5,  1.0, 0.5, 1,
+      0.5,   0.0, 0.5, 1,
+      0.5,   1.0, 0.5, 1
     ]);
     this.indices = new Uint32Array([
       //left side
@@ -137,8 +137,8 @@ class Cube extends Drawable {
   gridPosToScreenPos(gridPos: vec3): vec3 {
     let screenPos: vec3 = vec3.create();
     screenPos[0] = gridPos[0] * this.scale[0] / this.gridSize[0] - this.scale[0] * 0.5;
-    screenPos[1] = 0;
-    screenPos[2] = gridPos[2] * this.scale[2] / this.gridSize[2] - this.scale[2] * 0.5;
+    screenPos[1] = gridPos[1] * this.scale[0] / this.gridSize[0];
+    screenPos[2] = gridPos[2] * this.scale[1] / this.gridSize[1] - this.scale[1] * 0.5;
     return screenPos;
   }
 
@@ -165,10 +165,10 @@ class Cube extends Drawable {
           || block.blockType == BlockType.QUARTER_PYRAMID
         ) {
           this.numInstances++;
-          let startPos: vec3 = block.pos;
-          let startPosScreen = this.gridPosToScreenPos(startPos);
+          let startPosScreen = this.gridPosToScreenPos(block.pos);
+          console.log(startPosScreen);
 
-          offsets.push(startPosScreen[0], 0, startPosScreen[1], 0);
+          offsets.push(startPosScreen[0], startPosScreen[1], startPosScreen[2], 0);
           colors.push(
             block.footprint[0] * this.scale[0] / this.gridSize[0],
             block.footprint[1] * this.scale[0] / this.gridSize[0],
@@ -191,7 +191,6 @@ class Cube extends Drawable {
     this.colors = new Float32Array(colors);
     this.blockInfo = new Float32Array(blockInfo);
 
-    console.log(blockInfo);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.bufTranslate);
     gl.bufferData(gl.ARRAY_BUFFER, this.offsets, gl.STATIC_DRAW);

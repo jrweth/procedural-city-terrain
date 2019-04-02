@@ -19,7 +19,7 @@ export abstract class Shape {
     this.rotation = options.rotation;
   }
 
-  abstract runReplacement(): Shape[];
+  abstract runReplacement(seed: number): Shape[];
 
   abstract getBlocks(): Block[];
 

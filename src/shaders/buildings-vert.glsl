@@ -38,7 +38,7 @@ vec2 random2( vec2 p , vec2 seed) {
 
 float getVertexNum() {
    if(vs_BlockInfo.x < 10.0 ) {
-       return vs_Pos.x + 0.5 + (vs_Pos.z + 0.5) * 2.0 + (vs_Pos.y + 0.5) * 4.0;
+       return vs_Pos.x + 0.5 + (vs_Pos.z + 0.5) * 2.0 + (vs_Pos.y) * 4.0;
    }
 
    return 0.0;

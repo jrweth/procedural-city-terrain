@@ -6,8 +6,8 @@ export class Pyramid extends Shape{
 
   constructor(options: {pos: vec3, footprint: vec3, rotation: number}) {
     super(options);
-    this.symbol = 'B';
-    this.terminal = false;
+    this.symbol = 'P';
+    this.terminal = true;
   }
 
   getBlocks() {
