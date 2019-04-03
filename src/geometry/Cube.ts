@@ -166,7 +166,6 @@ class Cube extends Drawable {
         ) {
           this.numInstances++;
           let startPosScreen = this.gridPosToScreenPos(block.pos);
-          console.log(startPosScreen);
 
           offsets.push(startPosScreen[0], startPosScreen[1], startPosScreen[2], 0);
           colors.push(

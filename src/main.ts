@@ -262,24 +262,21 @@ function main() {
 
 
   function processKeyPresses() {
-    let velocity: vec2 = vec2.fromValues(0,0);
+    let velocity: vec3 = vec3.fromValues(0,0, 0);
     if(wPressed) {
-      velocity[1] += 1.0;
+      velocity[2] += 1.0;
     }
     if(aPressed) {
       velocity[0] += 1.0;
     }
     if(sPressed) {
-      velocity[1] -= 1.0;
+      velocity[2] -= 1.0;
     }
     if(dPressed) {
       velocity[0] -= 1.0;
     }
-    let newPos: vec2 = vec2.fromValues(0,0);
-    vec2.add(newPos, velocity, planePos);
-    terrainShader.setPlanePos(newPos);
-    roadShader.setPlanePos(newPos);
-    planePos = newPos;
+    camera.pan(velocity);
+
   }
 
   // This function will be called every frame
@@ -315,7 +312,6 @@ function main() {
   camera.updateProjectionMatrix();
 
   // Start the render loop
-  console.log(roadSegments);
   tick();
 }
 
