@@ -54,6 +54,7 @@ export class Building {
     while(!this.allShapesTerminal()) {
       this.runReplacement();
     }
+    console.log(this.shapes);
   }
 
   runReplacement() {

@@ -17,13 +17,13 @@ void main()
 {
 
     vec3 buildingColor = vec3(0.9, 0.9, 0.9);
-    if(fs_Pos.x > 0.49) {
+    if(fs_Pos.x > 0.999999) {
         buildingColor = vec3(0.0, 0.0, 0.0);
     }
-    else if(fs_Pos.z < -0.49) {
+    else if(fs_Pos.z < 0.0001) {
         buildingColor = vec3(0.3, 0.3, 0.3);
     }
-    else if(fs_Pos.z > 0.5) {
+    else if(fs_Pos.z > 0.999999) {
         buildingColor = vec3(0.6, 0.6, 0.6);
     }
 

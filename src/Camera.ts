@@ -19,6 +19,8 @@ class Camera {
     this.controls = CameraControls(document.getElementById('canvas'), {
       eye: position,
       center: target,
+      flipX: false,
+      flipY: false
     });
     vec3.add(this.target, this.position, this.direction);
     mat4.lookAt(this.viewMatrix, this.controls.eye, this.controls.center, this.controls.up);

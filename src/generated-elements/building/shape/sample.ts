@@ -6,8 +6,8 @@ export class Sample extends Shape{
 
   constructor(options: {pos: vec3, footprint: vec3, rotation: number}) {
     super(options);
-    this.symbol = 'B';
-    this.terminal = false;
+    this.symbol = 'S';
+    this.terminal = true;
   }
 
   getBlocks() {
