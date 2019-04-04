@@ -128,19 +128,17 @@ export class LSystem {
       }
     }
 
-
-
     //add the end segment if we still need to
     if(segment.endIntersectionId == this.intersections.length) {
       let endIntersection = new Intersection();
       endIntersection.pos = endPos;
       endIntersection.segmentIds = [segmentId];
 
-      this.intersections[startIntersectionId].segmentIds.push(this.segments.length);
-      this.segments.push(segment);
       this.addIntersection(endIntersection);
-
     }
+
+    this.intersections[startIntersectionId].segmentIds.push(this.segments.length);
+    this.segments.push(segment);
 
     return {
       added: true,
@@ -165,6 +163,7 @@ export class LSystem {
     }
     return closestId;
   }
+
 
   setStartPosition() {
     //add the first intersection

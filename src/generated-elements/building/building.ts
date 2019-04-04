@@ -55,7 +55,6 @@ export class Building {
       count++;
       this.runReplacement();
     }
-    console.log(this.shapes);
   }
 
   runReplacement() {

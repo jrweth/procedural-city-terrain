@@ -27,8 +27,8 @@ const controls = {
   'Highway Segment Length': 12,
   'Highway Iterations': 3,
   'Highway Max Turn Angle': Math.PI / 18,
-  'Street Segment Length': 8,
-  'Street Iterations': 5,
+  'Street Segment Length': 12,
+  'Street Iterations': 3,
 
   'Num Buildings': 1000,
   'Load Scene': loadScene, // A function pointer, essentially

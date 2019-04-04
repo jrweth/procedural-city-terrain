@@ -6,7 +6,7 @@ import {Constraint, ConstraintAdjustment} from "./constraint";
 import {Terrain} from "../../terrain";
 import {VecMath} from "../../../utils/vec-math";
 
-export class WaterConstraint implements Constraint {
+export class CurrentRoadsConstraint implements Constraint {
   terrain: Terrain;
   roads: Roads;
   constructor(options: {terrain: Terrain, roads: Roads}) {
@@ -16,40 +16,57 @@ export class WaterConstraint implements Constraint {
 
   checkConstraint(segment: Segment, endPos: vec2): boolean {
 
-    let nearestIntersectionId = this.roads.findNearbyIntersectionId(endPos, 0.5);
-    if(nearestIntersectionId !== null) {
-      segment.endIntersectionId = nearestIntersectionId;
-      segment.rotation = VecMath.getRotationFromPoints(
-        this.roads.intersections[segment.startIntersectionId].pos,
-        this.roads.intersections[nearestIntersectionId].pos
-      );
-      let segmentId = this.roads.segments.length;
-      this.roads.segments.push(segment);
-      this.roads.intersections[segment.startIntersectionId].segmentIds.push(segmentId);
-
-      this.roads.intersections[nearestIntersectionId].segmentIds.push(segmentId);
-    }
-    if(segment.roadType == RoadType.STREET) {
-      if(!this.terrain.positionOnLand(endPos)) {
-        return false;
-      }
+    let nearestSegmentId = this.getNearestSegmentId(segment, endPos);
+    if(nearestSegmentId !== null && segment.roadType == RoadType.STREET) {
+      return false;
     }
 
-    if(segment.roadType == RoadType.STREET) {
-      //if(segment.startIntersectionId)
-
-    }
     return true;
   }
 
   attemptAdjustment(segment: Segment, endPos: vec2): ConstraintAdjustment {
     let adj = new ConstraintAdjustment();
     adj.added = false;
-    adj.intersected = false;{
-      false
-    };
+    adj.intersected = false;
+
+    let nearestSegmentId = this.getNearestSegmentId(segment, endPos);
+
+    if(nearestSegmentId !== null){
+      //get the segment
+      segment.endIntersectionId = this.getNearestSegmentIntersectionId(endPos, nearestSegmentId);
+      segment.rotation = VecMath.getRotationFromPoints(
+        this.roads.intersections[segment.startIntersectionId].pos,
+        this.roads.intersections[segment.endIntersectionId].pos
+      );
+      adj.added = true;
+      adj.intersected = true;
+      // console.log('adjusted');
+    }
 
     return adj;
   }
+
+  getNearestSegmentId(segment: Segment, endPos: vec2) {
+    let threshold = this.terrain.highwaySegmentLength / 3;
+    if(segment.roadType == RoadType.STREET) threshold = this.terrain.streetSegmentLength / 3;
+
+    return this.roads.findNearestSegment(endPos, threshold);
+
+  }
+
+  getNearestSegmentIntersectionId(pos: vec2, segmentId: number) {
+    let start = this.roads.intersections[this.roads.segments[segmentId].startIntersectionId];
+    let end = this.roads.intersections[this.roads.segments[segmentId].endIntersectionId];
+
+    if(vec2.dist(start.pos, pos) < vec2.dist(end.pos, pos)) {
+      return this.roads.segments[segmentId].startIntersectionId;
+    }
+    else {
+      return this.roads.segments[segmentId].endIntersectionId;
+    }
+
+  }
+
+
 
 }

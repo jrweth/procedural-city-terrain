@@ -12,6 +12,7 @@ import {EdgeOfMapConstraint} from "./constraint/edge-of-map-constraint";
 import {Terrain} from "../terrain";
 import {start} from "repl";
 import Random from "../../noise/random";
+import {CurrentRoadsConstraint} from "./constraint/current-roads-constraint";
 
 
 class Roads extends LSystem {
@@ -77,6 +78,12 @@ class Roads extends LSystem {
       roads: this
     });
     this.addConstraint(edgeConstraint);
+
+    let currentRoadsConstraint = new CurrentRoadsConstraint({
+      terrain: this.terrain,
+      roads: this
+    });
+    this.addConstraint(currentRoadsConstraint);
 
 
   }
@@ -154,14 +161,12 @@ class Roads extends LSystem {
   }
 
   addNeighborhoods(): void {
-    console.log(this.streetSegmentLength);
     this.axiom = 'FXFFXFXFFX';
     this.addXRule('X', new XReplace('[-FX][FX][+FX]'));
     this.runExpansionIterations(this.streetIterations);
 
     let numInt = this.intersections.length;
-    let numNeighborhoods = 50;
-    console.log(this.turtle);
+    let numNeighborhoods = 20;
     for(let i = 0; i < numNeighborhoods; i++) {
       let intId = Math.floor(i * numInt / numNeighborhoods);
       this.addNeighborhood(intId, i % 5 * Math.PI / 69);
@@ -180,6 +185,44 @@ class Roads extends LSystem {
     this.runDrawRules();
 
   }
+
+  /**
+   * Get the ids of the road which intersect the provided segment
+   * @param segment
+   * @param endPos
+   */
+  intersectingRoadIds(startPos: vec2, endPos: vec2) {
+    let possible = new Set();
+  }
+
+
+  findNearestSegment(pos: vec2, distThreshold: number): number | null {
+    let gridIndex: vec2 = this.terrain.gridPosToGridIndex(pos);
+    let minX = Math.max(0, gridIndex[0] - Math.ceil(distThreshold));
+    let maxX = Math.min(this.terrain.gridSize[0] -1, gridIndex[0] + Math.ceil(distThreshold));
+    let minZ = Math.max(0, gridIndex[1] - Math.ceil(distThreshold));
+    let maxZ = Math.min(this.terrain.gridSize[1] -1, gridIndex[1] + Math.ceil(distThreshold));
+
+    let closestDist: number = 2 * distThreshold * distThreshold;
+    let closestId: number | null = null;
+    for(let x = minX; x < maxX; x++) {
+      for(let z = minZ; z < maxZ; z++) {
+        let gridPart = this.terrain.gridParts[x][z];
+        if(gridPart.roadSegmentIds.length > 0) {
+          let distX = gridIndex[0] - x;
+          let distZ = gridIndex[1] - z;
+          let dist = (distX * distX) + (distZ * distZ);
+          if(dist < closestDist) {
+            closestId = gridPart.roadSegmentIds[0];
+          }
+        }
+      }
+    }
+
+    return closestId;
+
+  }
+
 
   // getSegmentSlope(segmentId: number): number {
   //   let segment: Segment = this.segments[segmentId];
