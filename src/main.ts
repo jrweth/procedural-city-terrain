@@ -23,8 +23,8 @@ const controls = {
   'Elevation Seed': 89.3943,
   'Population Seed': 1.234,
 
-  'Road Seed': 1.234,
-  'Highway Segment Length': 12,
+  'Road Seed': 8.987,
+  'Highway Segment Length': 8,
   'Highway Iterations': 3,
   'Highway Max Turn Angle': Math.PI / 18,
   'Street Segment Length': 12,
@@ -140,7 +140,7 @@ function addDisplayControls(options: {
 
 function addRoadControls() {
   let roadFolder = gui.addFolder('roads');
-  let rSeed = roadFolder.add(controls, 'Road Seed', {'seed 1': 1.234, 'seed 2': 5.43, 'seed 3': 8.987, 'seed 4': 43.343}).listen();
+  let rSeed = roadFolder.add(controls, 'Road Seed', {'seed 1': 8.987, 'seed 2': 5.43, 'seed 3': 1.234, 'seed 4': 43.343}).listen();
   let rLength = roadFolder.add(controls, 'Highway Segment Length', [1,2,4, 8, 12, 16, 32]).listen();
   let rIter = roadFolder.add(controls, 'Highway Iterations', [3,4,5]).listen();
   let rAngle = roadFolder.add(controls, 'Highway Max Turn Angle', {

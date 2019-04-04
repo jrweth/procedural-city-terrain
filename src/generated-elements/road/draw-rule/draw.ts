@@ -1,6 +1,6 @@
 import {BaseDrawRule} from "./base-draw-rule";
 import {DrawRule} from "./draw-rule";
-import {cloneTurtle, RoadType, Turtle} from "../turtle";
+import {RoadType, Turtle} from "../turtle";
 import {LSystem, Segment} from "../lsystem";
 import {vec2} from "gl-matrix";
 import Prando from "prando";
@@ -46,6 +46,9 @@ export class Draw extends BaseDrawRule implements DrawRule {
       }
     }
     else {
+      turtle.branchEnded = true;
+    }
+    if(turtle.roadType == RoadType.STREET && result.intersected) {
       turtle.branchEnded = true;
     }
 
