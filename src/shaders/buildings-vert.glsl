@@ -22,6 +22,7 @@ const float PYRAMID = 2.0;
 const float TENT = 3.0;
 const float TRI_TUBE = 4.0;
 const float QUARTER_PYRAMID = 5.0;
+const float SLANT = 6.0;
 
 float random1( vec2 p , vec2 seed) {
   return fract(sin(dot(p + seed, vec2(127.1, 311.7))) * 43758.5453);
@@ -53,6 +54,21 @@ vec3 getCubeVertexPosition() {
     //scale top toward middle
     else {
         return mix(vec3(0.5, 1.0, 0.5), vs_Pos.xyz, vs_BlockInfo[3]);
+    }
+}
+
+vec3 getSlantVertexPosition() {
+    float vertexNum = getVertexNum();
+    //scale bottom toward middle
+    if(vertexNum == 0.0 || vertexNum == 2.0 || vertexNum == 4.0 || vertexNum == 6.0) {
+        return vs_Pos.xyz;
+    }
+    //scale top toward middle
+    else if(vertexNum == 1.0 || vertexNum == 3.0) {
+        return mix(vec3(0.0, 0.0, vs_Pos.z), vs_Pos.xyz, vs_BlockInfo[2]);
+    }
+    else {
+        return mix(vec3(0.0, 1.0, vs_Pos.z), vs_Pos.xyz, vs_BlockInfo[3]);
     }
 }
 
@@ -109,6 +125,7 @@ vec3 getVertexPosition() {
     else if (vs_BlockInfo[0] == TENT) return getTentVertexPosition();
     else if (vs_BlockInfo[0] == TRI_TUBE) return getTriTubeVertexPosition();
     else if (vs_BlockInfo[0] == QUARTER_PYRAMID) return getQuarterPyramidVertexPosition();
+    else if (vs_BlockInfo[0] == SLANT) return getSlantVertexPosition();
     return vs_Pos.xyz;
 }
 

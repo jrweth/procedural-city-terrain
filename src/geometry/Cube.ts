@@ -158,12 +158,7 @@ class Cube extends Drawable {
       for(let j = 0; j < blocks.length; j++) {
         let block: Block = blocks[j];
 
-        if(block.blockType == BlockType.CUBE
-          || block.blockType == BlockType.PYRAMID
-          || block.blockType == BlockType.TENT
-          || block.blockType == BlockType.TRI_TUBE
-          || block.blockType == BlockType.QUARTER_PYRAMID
-        ) {
+        if(block.blockType < 10) {
           this.numInstances++;
           let startPosScreen = this.gridPosToScreenPos(block.pos);
 

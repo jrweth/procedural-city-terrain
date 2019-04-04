@@ -1,8 +1,11 @@
-import {Shape} from './shape'
+import {NumOptions, Shape} from './shape'
 import {BlockType} from './block';
 import {vec3} from "gl-matrix";
 import {Pyramid} from "./pyramid";
 import Random from "../../../noise/random";
+import {TentRoof} from "./tentRoof";
+import {SlantRoof} from "./slantRoof";
+import {Axis} from "../../../geometry/Axis"
 
 export class Box extends Shape{
 
@@ -24,12 +27,22 @@ export class Box extends Shape{
   }
 
   runReplacement(seed: number): Shape[] {
-    let type = Random.randomInt(2, seed);
+    let type = Random.randomInt(12, seed);
     switch(type) {
-      case 0: return this.addPyramidRoof(seed);
-      case 1: return this.splitX(seed);
-      case 2: return this.splitY(seed);
-      case 3: return this.splitZ(seed);
+      case 0: return this.splitX({percentage: 0.5});
+      case 1: return this.splitY({percentage: 0.5});
+      case 2: return this.splitZ({percentage: 0.5});
+      case 3: return this.addPyramidRoof(seed);
+      case 4: return this.addTentRoof(seed);
+      case 5: return this.addSlantRoof(seed);
+      case 6: this.shrinkX({percentage: 0.20}); return [this];
+      case 7: return this.taperBoth({percentage: 0.25});
+      case 8: return this.taperX({percentage: 0.25})
+      case 9: return this.taperZ({percentage: 0.25})
+      case 10: this.terminal = true; return [this];
+      default:
+          return this.addSlantRoof(seed);
+
     }
   }
 
@@ -40,36 +53,84 @@ export class Box extends Shape{
       footprint: vec3.fromValues(this.footprint[0], height, this.footprint[2]),
       rotation: this.rotation
     });
-    //this.footprint[1] = height;
     this.terminal = true;
     return [this, pyramid];
   }
 
-  splitX(seed: number): Shape[] { return this.split(0, seed); }
-  splitY(seed: number): Shape[] { return this.split(1, seed); }
-  splitZ(seed: number): Shape[] { return this.split(2, seed); }
+  addTentRoof(seed: number): Shape[] {
+    let height = this.footprint[1] / 2;;
+    let tentRoof = new TentRoof({
+      pos: vec3.fromValues(this.pos[0], this.pos[1] + this.footprint[1], this.pos[2]),
+      footprint: vec3.fromValues(this.footprint[0], height, this.footprint[2]),
+      rotation: this.rotation
+    });
+    //this.footprint[1] = height;
+    this.terminal = true;
+    return [this, tentRoof];
+  }
+
+  addSlantRoof(seed: number): Shape[] {
+    let height = this.footprint[1] / 2;;
+    let roof = new SlantRoof({
+      pos: vec3.fromValues(this.pos[0], this.pos[1] + this.footprint[1], this.pos[2]),
+      footprint: vec3.fromValues(this.footprint[0], height, this.footprint[2]),
+      rotation: this.rotation
+    });
+    this.terminal = true;
+    return [this, roof];
+  }
+
+  taperBoth(shrinkBy: NumOptions): Shape[] {
+    let newBoxes: Shape[] = this.splitY({percentage: .5});
+    if(newBoxes.length > 1) {
+      newBoxes[1].shrinkBoth(shrinkBy);
+    }
+    return newBoxes;
+  }
+
+  taperX(shrinkBy: NumOptions): Shape[] {
+    let newBoxes: Shape[] = this.splitY({percentage: .5});
+    if(newBoxes.length > 1) {
+      newBoxes[1].shrinkX(shrinkBy);
+    }
+    return newBoxes;
+  }
+
+  taperZ(shrinkBy: NumOptions): Shape[] {
+    let newBoxes: Shape[] = this.splitY({percentage: .5});
+    if(newBoxes.length > 1) {
+      newBoxes[1].shrinkZ(shrinkBy);
+    }
+    return newBoxes;
+  }
+
+
+  splitX(splitAt: NumOptions): Shape[] { return this.split(Axis.X, splitAt); }
+  splitY(splitAt: NumOptions): Shape[] { return this.split(Axis.Y, splitAt); }
+  splitZ(splitAt: NumOptions): Shape[] { return this.split(Axis.Z, splitAt); }
 
 
 
-  split(axis: number, seed: number) {
+  split(axis: Axis, splitAt: NumOptions) {
     //too small to spit vertically
     if(this.footprint[axis] < 2){
       return[this];
     }
 
-    let size = Random.randomInt(this.footprint[axis] - 1, seed);
+    let offset = NumOptions.getValue(splitAt, this.footprint[axis] * 0.9, this.footprint[axis]* 0.1);
+
     let newPos = vec3.fromValues(this.pos[0], this.pos[1], this.pos[2]);
-    newPos[axis] = newPos[axis] + size;
+    newPos[axis] = newPos[axis] + offset;
 
     let newFootprint = vec3.fromValues(this.footprint[0], this.footprint[1], this.footprint[2]);
-    newFootprint[axis] = newFootprint[axis] - size;
+    newFootprint[axis] = newFootprint[axis] - offset;
 
     let newBox = new Box({
       pos: newPos,
       footprint: newFootprint,
       rotation: this.rotation
     });
-    this.footprint[axis] = size;
+    this.footprint[axis] = offset;
 
     //no more changes if we are supporting something on top
     if(axis == 1) this.terminal = true;

@@ -6,6 +6,7 @@ export enum BlockType  {
   'TENT' = 3, //tent
   'TRI_TUBE' = 4,
   'QUARTER_PYRAMID' = 5,
+  'SLANT' = 6,
   'QUARTER_ROUND' = 10//standard quarter round
 };
 

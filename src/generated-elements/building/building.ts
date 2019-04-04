@@ -5,6 +5,7 @@ import {Block, BlockType} from "./shape/block";
 import {Pyramid} from "./shape/pyramid";
 import {Sample} from "./shape/sample";
 import Random from "../../noise/random";
+import {SlantRoof} from "./shape/slantRoof";
 
 
 export class Building {
@@ -51,7 +52,9 @@ export class Building {
   }
 
   runReplacements() {
-    while(!this.allShapesTerminal()) {
+    let count: number = 0;
+    while(!this.allShapesTerminal() && count < 20) {
+      count++;
       this.runReplacement();
     }
     console.log(this.shapes);
