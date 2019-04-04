@@ -18,6 +18,7 @@ const controls = {
   'Show Roads': true,
   'Show Population Density': true,
   'Show Buildings': true,
+  'Show Build Sites': false,
 
   'Elevation Seed': 89.3943,
   'Population Seed': 1.234,
@@ -109,7 +110,7 @@ function addTerrainControls() {
 function getDisplayOptions(): vec4 {
   return vec4.fromValues(
     controls["Show Population Density"] ? 1 : 0,
-    0,
+    controls["Show Build Sites"] ? 1 : 0,
     0,
     0
   );
@@ -126,9 +127,15 @@ function addDisplayControls(options: {
   let displayFolder = gui.addFolder('display');
   let showRoads = displayFolder.add(controls, 'Show Roads');
   let showPop = displayFolder.add(controls, 'Show Population Density').listen();
+  let showBuildings = displayFolder.add(controls, 'Show Buildings').listen();
+  let showBuildSites = displayFolder.add(controls, 'Show Build Sites').listen();
   showPop.onChange(() => {
     options.terrainShader.setDisplayOptions(getDisplayOptions());
   });
+  showBuildSites.onChange(() => {
+    console.log(getDisplayOptions());
+    options.terrainShader.setDisplayOptions(getDisplayOptions());
+  })
 }
 
 function addRoadControls() {

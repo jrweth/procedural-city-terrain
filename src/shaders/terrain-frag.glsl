@@ -32,7 +32,7 @@ void main()
         groundColor = mix(vec3(0.0, 1.0, 0.0), vec3(1.0, 1.0, 0.0), (0.43 - fs_Pos.y) * 33.33);
     }
     //building possibility
-    if(fs_Info.x == 1.0) {
+    if(fs_Info.x == 1.0 && u_DisplayOptions.g > 0.0) {
         groundColor = vec3(0.5, 0.5, 0.5);
     }
     //building locations
