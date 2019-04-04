@@ -23,7 +23,7 @@ const controls = {
   'Elevation Seed': 89.3943,
   'Population Seed': 1.234,
 
-  'Road Seed': 8.987,
+  'Road Seed': 5.43,
   'Highway Segment Length': 8,
   'Highway Iterations': 3,
   'Highway Max Turn Angle': Math.PI / 18,

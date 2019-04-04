@@ -116,11 +116,17 @@ export class VecMath {
       var y = (A1 * C2 - A2 * C1) / det;
 
       //make sure they actually hit
-      if(x < e0[0]) return undefined;
-      if(x > e1[0]) return undefined;
+      if(x < Math.min(e0[0], e1[0])) return undefined;
+      if(x > Math.max(e1[0], e1[1])) return undefined;
 
-      if(y < e0[1]) return undefined;
-      if(y > e1[1]) return undefined;
+      if(x < Math.min(o0[0], o1[0])) return undefined;
+      if(x > Math.max(o1[0], o1[1])) return undefined;
+
+      if(y < Math.min(e0[1], e1[1])) return undefined;
+      if(y > Math.max(e0[1], e1[1])) return undefined;
+
+      if(y < Math.min(o0[1], o1[1])) return undefined;
+      if(y > Math.max(o0[1], o1[1])) return undefined;
 
       var intersection = vec2.fromValues(x, y);
       return intersection;

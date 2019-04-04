@@ -270,6 +270,7 @@ export class Terrain {
     return (
       this.hasNearbyStreet(gridPos)
       && this.gridParts[gridPos[0]][gridPos[1]].roadSegmentIds.length == 0
+      && this.positionOnLand(gridPos)
     );
   }
 
@@ -377,8 +378,8 @@ export class Terrain {
         //check for intersections
         let g1: vec2 = vec2.fromValues(i, j);
         let g2: vec2 = vec2.fromValues(i, j+1);
-        let g3: vec2 = vec2.fromValues(i+i, j);
-        let g4: vec2 = vec2.fromValues(i+i, j+1);
+        let g3: vec2 = vec2.fromValues(i+1, j);
+        let g4: vec2 = vec2.fromValues(i+1, j+1);
         if(
           VecMath.intersectionTest(g1, g2, p1, p2) !== undefined ||
           VecMath.intersectionTest(g1, g3, p1, p2) !== undefined ||
@@ -401,8 +402,8 @@ export class Terrain {
   selectBuildingLocations() {
     let possible: vec2[] = [];
     //get the possible building locations
-    for(let i = 0; i < this.gridSize[0]; i++) {
-      for(let j = 0; j < this.gridSize[0]; j++) {
+    for(let i = 0; i < this.gridSize[0]-1; i++) {
+      for(let j = 0; j < this.gridSize[1]-1; j++) {
         if(this.getBuildingSuitability(vec2.fromValues(i,j))) {
           possible.push(vec2.fromValues(i, j));
         }
