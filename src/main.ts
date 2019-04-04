@@ -19,7 +19,7 @@ const controls = {
   'Show Population Density': true,
   'Show Buildings': true,
 
-  'Elevation Seed': 1.234,
+  'Elevation Seed': 89.3943,
   'Population Seed': 1.234,
 
   'Road Seed': 1.234,
@@ -98,7 +98,7 @@ function loadScene() {
  */
 function addTerrainControls() {
   let terrainFolder = gui.addFolder('terrain');
-  let eSeed = terrainFolder.add(controls, 'Elevation Seed', {'seed 1': 1.234, 'seed 2': 5.43, 'seed 3': 8.987, 'seed 4': 89.3943}).listen();
+  let eSeed = terrainFolder.add(controls, 'Elevation Seed', {'seed 1': 89.3943, 'seed 2': 5.43, 'seed 3': 8.987, 'seed 4': 1.234}).listen();
   eSeed.onChange(loadScene);
   let pSeed = terrainFolder.add(controls, 'Population Seed', {'seed 1': 1.234, 'seed 2': 5.43, 'seed 3': 8.987, 'seed 4': 43.343}).listen();
   pSeed.onChange(loadScene);
