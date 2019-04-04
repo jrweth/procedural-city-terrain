@@ -413,24 +413,24 @@ export class Terrain {
     for(let x = 0; x < this.numBuildings; x++) {
       let gridPart: GridPart = this.gridParts[possible[index][0]][possible[index][1]];
       gridPart.hasBuilding = true;
-      // this.buildings.push(new Building({
-      //   pos: vec3.fromValues(possible[index][0], 2.0, possible[index][1]),
-      //   rotation: 0,
-      //   footprint: vec3.fromValues(2, 2 + gridPart.avgDensity * 80, 2),
-      //   seed: Random.random2to1(possible[index], vec2.fromValues(this.buildingSeed, 2.2))
-      // }));
+      this.buildings.push(new Building({
+        pos: vec3.fromValues(possible[index][0], 2.0, possible[index][1]),
+        rotation: 0,
+        footprint: vec3.fromValues(2, 2 + gridPart.avgDensity * 80, 2),
+        seed: Random.random2to1(possible[index], vec2.fromValues(this.buildingSeed, 2.2))
+      }));
       index += advance;
       index = index % possible.length;
     }
 
 
     for(let i = 0; i < 10; i++) {
-      this.buildings.push(new Building({
-        pos: vec3.fromValues(150 + i * 20,0,250),
-        rotation: 0,
-        footprint: vec3.fromValues(15, 40, 15),
-        seed: Random.random2to1(vec2.fromValues(i, 34.32), vec2.fromValues(this.buildingSeed, 2.2))
-      }));
+      // this.buildings.push(new Building({
+      //   pos: vec3.fromValues(150 + i * 20,0,250),
+      //   rotation: 0,
+      //   footprint: vec3.fromValues(15, 40, 15),
+      //   seed: Random.random2to1(vec2.fromValues(i, 34.32), vec2.fromValues(this.buildingSeed, 2.2))
+      // }));
 
     }
 

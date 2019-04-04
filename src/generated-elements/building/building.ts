@@ -2,10 +2,8 @@ import {vec2, vec3} from "gl-matrix";
 import {Shape} from "./shape/shape";
 import {Box} from "./shape/box";
 import {Block, BlockType} from "./shape/block";
-import {Pyramid} from "./shape/pyramid";
 import {Sample} from "./shape/sample";
 import Random from "../../noise/random";
-import {SlantRoof} from "./shape/slantRoof";
 
 
 export class Building {
