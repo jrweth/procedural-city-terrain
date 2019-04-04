@@ -18,7 +18,7 @@ const controls = {
   'Show Roads': true,
   'Show Population Density': true,
   'Show Buildings': true,
-  'Show Build Sites': false,
+  'Show Build Sites': true,
 
   'Elevation Seed': 89.3943,
   'Population Seed': 1.234,
@@ -255,7 +255,7 @@ function main() {
     new Shader(gl.FRAGMENT_SHADER, require('./shaders/buildings-frag.glsl')),
   ]);
 
-  terrainShader.setDisplayOptions(vec4.fromValues(1,0,0,0))
+  terrainShader.setDisplayOptions(getDisplayOptions());
 
   //add all the controls
   addDisplayControls({terrainShader: terrainShader});

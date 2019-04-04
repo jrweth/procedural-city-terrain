@@ -264,6 +264,10 @@ export class Terrain {
     return false;
   }
 
+  /**
+   *
+   * @param gridPos
+   */
   getBuildingSuitability(gridPos: vec2): boolean {
     if(this.checkGridPosOutOfBounds(gridPos)) return false;
 
@@ -400,28 +404,25 @@ export class Terrain {
    * set the building locations
    */
   selectBuildingLocations() {
-    let possible: vec2[] = [];
+    let possibleSet = new Set<string>();
     //get the possible building locations
     for(let i = 0; i < this.gridSize[0]-1; i++) {
       for(let j = 0; j < this.gridSize[1]-1; j++) {
         if(this.getBuildingSuitability(vec2.fromValues(i,j))) {
-          possible.push(vec2.fromValues(i, j));
+          possibleSet.add(i.toString() + '-' + j.toString());
         }
       }
     }
-    let index = Math.floor(possible.length/3);
-    let advance = Math.floor(possible.length / 322);
     for(let x = 0; x < this.numBuildings; x++) {
-      let gridPart: GridPart = this.gridParts[possible[index][0]][possible[index][1]];
-      gridPart.hasBuilding = true;
-      this.buildings.push(new Building({
-        pos: vec3.fromValues(possible[index][0], 2.0, possible[index][1]),
-        rotation: 0,
-        footprint: vec3.fromValues(2, 2 + gridPart.avgDensity * 80, 2),
-        seed: Random.random2to1(possible[index], vec2.fromValues(this.buildingSeed, 2.2))
-      }));
-      index += advance;
-      index = index % possible.length;
+      if(possibleSet.size == 0) break;
+
+      let coords = this.getRandomSetValue(2.2 + x, possibleSet).split('-');
+      this.createBuilding(
+        parseInt(coords[0]),
+        parseInt(coords[1]),
+        x,
+        possibleSet
+      );
     }
 
 
@@ -439,5 +440,130 @@ export class Terrain {
 
   }
 
+  getRandomSetValue(seed: number, set: Set<string>): string | null{
+    let index = Random.randomInt(set.size, seed);
+    let count = 0;
+    for(let val of set) {
+      if(count == index) return val;
+      count++;
+    }
+    return null;
+  }
+
+
+  createBuilding(x:number, z:number, seed: number, set: Set<string>) {
+    let gridPart: GridPart = this.gridParts[x][z];
+    let maxFootprint = gridPart.avgDensity * this.streetSegmentLength * 10;
+    let pos = vec3.fromValues(x, 2.0, z);
+    let footprint = vec3.fromValues(1, 1, 1);
+
+    //remove start from the possible
+    set.delete(x.toString() + '-' + z.toString());
+    this.expandBuildingFootprint(pos, footprint, set, maxFootprint, seed);
+
+    //adjust the height
+    footprint[1] = maxFootprint * 3 / 10;
+    this.buildings.push(new Building({
+      pos: pos,
+      rotation: 0,
+      footprint: footprint,
+      seed: seed
+    }));
+
+    this.createBuildingBuffer(set, pos, footprint);
+
+  }
+
+  /**
+   * Try to exapnd the building in the direction specified by the seed
+   * @param startPos - the starting position of the building
+   * @param footprint - the footprint to expand
+   * @param possibleSet - the set of
+   * @param maxFootprint - max size that one dimension of the expansion can get
+   * @param seed - integer value
+   */
+  expandBuildingFootprint(startPos: vec3, footprint: vec3, possibleSet: Set<string>, maxFootprint: number, seed: number) {
+    let expandedX = true;
+
+    //try expanding x
+    let xVal = startPos[0] + footprint[0];
+    if (seed % 2 == 1) xVal = startPos[0] - 1;
+
+    //check to make sure all values in expanded column are possible
+    for (let z = startPos[2]; z < startPos[2] + footprint[2]; z++) {
+      if (!possibleSet.has(xVal.toString() + '-' + z.toString())) {
+        expandedX = false;
+      }
+    }
+    if (expandedX) {
+      //adjust footprint
+      footprint[0]++;
+      //adjust startpos if necessary
+      if (seed % 2 == 1) startPos[0]--;
+
+      //remove row from the possibilities
+      for (let z = startPos[2]; z < footprint[2]; z++) {
+        possibleSet.delete(xVal.toString() + '-' + z.toString());
+      }
+    }
+
+
+    //try expanding y
+    let expandedZ = true;
+
+    //try expanding y
+    let zVal = startPos[2] + footprint[2];
+    if (seed % 4 < 2) zVal = startPos[2] - 1;
+
+    //check to make sure all values in expanded column are possible
+    for (let x = startPos[0]; x < startPos[0] + footprint[0]; x++) {
+      if (!possibleSet.has(x.toString() + '-' + zVal.toString())) {
+        expandedZ = false;
+      }
+    }
+    if (expandedZ) {
+      //adjust footprint
+      footprint[2]++;
+      //adjust startpos if necessary
+      if (seed % 4 < 2) startPos[0]--;
+
+      //remove row from the possibilities
+      for (let x = startPos[0]; x < footprint[0]; x++) {
+        possibleSet.delete(x.toString() + '-' + zVal.toString());
+      }
+    }
+
+    //run again if we just expanded and still have room for more
+    if (
+      (expandedX && footprint[0] < maxFootprint)
+      || (expandedX && footprint[0] < maxFootprint)
+    ) this.expandBuildingFootprint(startPos, footprint, possibleSet, maxFootprint, seed);
+
+  }
+
+  /**
+   * Remove the positions around the building footprint from the possible values for the building
+   * @param possibleSet -  possible set of building coordinates
+   * @param pos - start position of the building
+   * @param fooprint - footprint of the building
+   */
+  createBuildingBuffer(possibleSet: Set<string>, pos: vec3, fooprint: vec3) {
+    for(let x = pos[0] - 1; x <= pos[0] + fooprint[0]; x++) {
+      let z = pos[2] - 1;
+      possibleSet.delete(x + '-' + z);
+      z = pos[2] + fooprint[2];
+      possibleSet.delete(x + '-' + z);
+    }
+
+    for(let z = pos[2] - 1; z <= pos[2] + fooprint[2]; z++) {
+      let x = pos[0] - 1;
+      possibleSet.delete(x + '-' + z);
+      x = pos[0] + fooprint[0];
+      possibleSet.delete(x + '-' + z);
+    }
+  }
+
 
 }
+//metropolis procedulal modeling.
+//clemen deng

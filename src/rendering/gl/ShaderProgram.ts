@@ -95,6 +95,8 @@ class ShaderProgram {
   }
 
   setDisplayOptions(options: vec4) {
+    console.log('setting display options');
+    console.log(options);
     this.use();
     if(this.unifDisplayOptions !== -1) {
       gl.uniform4fv(this.unifDisplayOptions, options);
