@@ -15,6 +15,7 @@ import RoadSegments from "./geometry/RoadSegments";
 // Define an object with application parameters and button callbacks
 // This will be referred to by dat.GUI's functions that add GUI elements.
 const controls = {
+  'Theme': 2,
   'Show Highways': true,
   'Show Streets' : true,
   'Show Population Density': true,
@@ -115,7 +116,7 @@ function getDisplayOptions(): vec4 {
   return vec4.fromValues(
     controls["Show Population Density"] ? 1 : 0,
     controls["Show Build Sites"] ? 1 : 0,
-    0,
+    controls["Theme"],
     0
   );
 }
@@ -132,23 +133,29 @@ function redoRoads() {
  * @param options
  */
 function addDisplayControls(options: {
-  terrainShader: ShaderProgram;
-
+  terrainShader: ShaderProgram,
+  buildingShader: ShaderProgram,
+  roadShader: ShaderProgram
 }) {
   let displayFolder = gui.addFolder('display');
+  let theme = displayFolder.add(controls, 'Theme', {'Map': 1, 'Dazzle': 2}).listen();
   let showHighways = displayFolder.add(controls, 'Show Highways').listen();
   let showStreets = displayFolder.add(controls, 'Show Streets').listen();
   let showPop = displayFolder.add(controls, 'Show Population Density').listen();
   let showBuildings = displayFolder.add(controls, 'Show Buildings').listen();
   let showBuildSites = displayFolder.add(controls, 'Show Build Sites').listen();
 
+  theme.onChange(() => {
+    options.terrainShader.setDisplayOptions(getDisplayOptions());
+    options.roadShader.setDisplayOptions(getDisplayOptions());
+    options.buildingShader.setDisplayOptions(getDisplayOptions());
+  })
   showHighways.onChange(redoRoads);
   showStreets.onChange(redoRoads);
   showPop.onChange(() => {
     options.terrainShader.setDisplayOptions(getDisplayOptions());
   });
   showBuildSites.onChange(() => {
-    console.log(getDisplayOptions());
     options.terrainShader.setDisplayOptions(getDisplayOptions());
   })
 }
@@ -271,9 +278,11 @@ function main() {
   ]);
 
   terrainShader.setDisplayOptions(getDisplayOptions());
+  roadShader.setDisplayOptions(getDisplayOptions());
+  buildingShader.setDisplayOptions(getDisplayOptions());
 
   //add all the controls
-  addDisplayControls({terrainShader: terrainShader});
+  addDisplayControls({terrainShader: terrainShader, buildingShader: buildingShader, roadShader: roadShader});
   addTerrainControls();
   addRoadControls();
   addBuildingControls();
