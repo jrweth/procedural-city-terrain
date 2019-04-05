@@ -14,6 +14,7 @@
 
 
 ![](img/cube_deformations.png)
+![](img/buildings.png)
 
 ## Assignment Requirements
 - __(75 points)__ Modify the provided terrain shader so that it incorporates various noise
