@@ -41,9 +41,7 @@ vec3 getMapThemeColor() {
     vec3 groundColor = vec3(.0, 1, 0);
     int type = getTerrainType();
     //add population density whic is stored in last of normal
-    if(u_DisplayOptions.r > 0.0) {
-        groundColor = groundColor * (1.0 - fs_Nor.a*2.0);
-    }
+
 
     //check for water
     if(type == WATER) {
@@ -55,6 +53,9 @@ vec3 getMapThemeColor() {
     }
     else if(type == LAND) {
         groundColor = vec3(.0, 1, 0);
+        if(u_DisplayOptions.r > 0.0) {
+            groundColor = groundColor * (1.0 - fs_Nor.a*2.0);
+        }
     }
 
 
@@ -102,8 +103,6 @@ void main()
         groundColor = getDazzleThemeColor();
         backgroundColor = getDazzleThemeBackground();
     }
-
-
 
     float t = clamp(smoothstep(40.0, 50.0, length(fs_Pos)), 0.0, 1.0); // Distance fog
 
