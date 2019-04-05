@@ -92,23 +92,37 @@ To add a bit of pizzaz to the visual 2 different themes were implemented using t
 - Map: Simple shading using flat colors
 - Electric Night: stylized futuristic shading for the night scene
 
-## Building Shading - Night
+### Building Shading - Night
 The Shading of the buildings was accomplished by highlighting the underlying geometry using a luminosity that falls
 off the further the distance from the original edges of the geometry.
 
 ![](img/building_shading.png)
 
 
-## Road Shading - Night
+### Road Shading - Night
 
 Shading for the roads was accomplished by using worley noise to simulate the blacktop. Stripes and dashes were 
 also added to the middle of the roads to simulate lane markers
 
 ![](img/road_shading.png)
 
-## Land Shading - Night
+### Land Shading - Night
 
 Land Shading was accomplished by utilizing the original height map for the terrain created using Fractional Brownian
  Motion and mixing several colors based upon the height at the given point.
 
 ![](img/night_terrain.png)
+
+
+### Water Shading - Night
+
+Water Shading was accomplished by creating FBM in the fragment shader and applying color based upon the height
+map.  The tips of the water were then given greater luminosity to simulate white caps.
+
+![](img/water.png)
+
+#Future Enhancements
+
+- Add time to the shader to enhance water effects and building lighting effects
+- Create much more surface detail for the buildings
+- Actually change the height of the land instead of keeping it flat 
