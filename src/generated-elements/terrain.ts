@@ -462,11 +462,12 @@ export class Terrain {
   getRandomSetValue(seed: number, set: Set<string>): string | null{
     let index = Random.randomInt(set.size, seed);
     let count = 0;
-    for(let val of set) {
+    let val:string;
+    for(val of set) {
       if(count == index) return val;
       count++;
     }
-    return null;
+    return val;
   }
 
 

@@ -32,7 +32,7 @@ const controls = {
   'Street Segment Length': 12,
   'Street Iterations': 3,
 
-  'Num Buildings': 2000,
+  'Num Buildings': 3000,
   'Load Scene': loadScene, // A function pointer, essentially
 };
 // Add controls to the gui
@@ -201,7 +201,7 @@ function addRoadControls() {
 
 function addBuildingControls() {
   let buildingFolder = gui.addFolder('building');
-  let eSeed = buildingFolder.add(controls, 'Num Buildings', [10,100,1000, 2000, 4000]).listen();
+  let eSeed = buildingFolder.add(controls, 'Num Buildings', [10,100,1000, 2000, 3000, 4000, 8000]).listen();
   eSeed.onChange(loadScene);
 
   // mapType.onChange();
