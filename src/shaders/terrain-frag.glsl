@@ -16,6 +16,9 @@ out vec4 out_Col; // This is the final output color that you will see on your
 const float MAP_THEME = 1.0;
 const float DAZZLE_THEME = 2.0;
 
+const float WATER_LINE = 0.4;
+const float COAST_LINE = 0.43;
+
 const int WATER = 0;
 const int LAND = 1;
 const int COAST = 2;
@@ -23,11 +26,11 @@ const int COAST = 2;
 
 int getTerrainType() {
     //check for water
-    if(fs_Pos.y <= 0.4) {
+    if(fs_Pos.y <= WATER_LINE) {
         return WATER;
     }
     //check for sand
-    else if(fs_Pos.y < 0.43) {
+    else if(fs_Pos.y < COAST_LINE) {
         return COAST;
     }
     return LAND;
@@ -49,7 +52,7 @@ vec3 getMapThemeColor() {
     }
     //check for sand
     else if(type == COAST) {
-        groundColor = mix(vec3(0.0, 1.0, 0.0), vec3(1.0, 1.0, 0.0), (0.43 - fs_Pos.y) * 33.33);
+        groundColor = mix(vec3(0.0, 1.0, 0.0), vec3(1.0, 1.0, 0.0), (COAST_LINE - fs_Pos.y) * 33.33);
     }
     else if(type == LAND) {
         groundColor = vec3(.0, 1, 0);
@@ -73,18 +76,22 @@ vec3 getMapThemeColor() {
 
 vec3 getDazzleThemeColor() {
     int type = getTerrainType();
+    vec3 groundColor;
     if(type == WATER) {
-        return vec3(0.0, 0.0, 0.1);
+        groundColor = vec3(0.0, 0.0, 0.1);
     }
     if(type == COAST) {
-        return vec3(0.0, 0.1, 0.1);
+       groundColor = mix(vec3(0.0, 0.3, 0.2), vec3(0.1, 0.1, 0.0), (COAST_LINE - fs_Pos.y) * 33.33);
     }
     if(type == LAND) {
-        return vec3(0.0, 0.1, 0.0);
+        groundColor = mix(vec3(0.0, 0.3, 0.2), vec3(0.7, 0.7, 1.0), (fs_Pos.y - COAST_LINE) / COAST_LINE);
 
     }
+    if(u_DisplayOptions.r > 0.0) {
+        groundColor = groundColor * (1.0 + pow(fs_Nor.a*2.0, 2.0));
+    }
 
-    return vec3(1.0, 1.0, 1.0);
+    return groundColor;
 
 }
 

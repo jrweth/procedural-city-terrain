@@ -58,5 +58,5 @@ void main()
     }
 
     float t = clamp(smoothstep(40.0, 50.0, length(fs_Translate.xz)), 0.0, 1.0); // Distance fog
-    out_Col = vec4(mix(roadColor, vec3(0.0, 0.0, 0.0), t), 1.0);
+    out_Col = vec4(mix(roadColor, backgroundColor, t), 1.0);
 }

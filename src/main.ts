@@ -148,7 +148,7 @@ function addDisplayControls(options: {
   renderer: OpenGLRenderer
 }) {
   let displayFolder = gui.addFolder('display');
-  let theme = displayFolder.add(controls, 'Theme', {'Map': 1, 'Dazzle': 2}).listen();
+  let theme = displayFolder.add(controls, 'Theme', {'Map': 1, 'Electric Night': 2}).listen();
   let showHighways = displayFolder.add(controls, 'Show Highways').listen();
   let showStreets = displayFolder.add(controls, 'Show Streets').listen();
   let showPop = displayFolder.add(controls, 'Show Population Density').listen();
