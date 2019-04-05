@@ -250,7 +250,7 @@ export class Terrain {
   hasNearbyStreet(gridPos: vec2): boolean {
     if(this.checkGridPosOutOfBounds(gridPos)) return false;
 
-    let blockRadius = this.streetSegmentLength * 0.75;
+    let blockRadius = this.streetSegmentLength * 0.5;
     let minX = Math.max(0, gridPos[0] - blockRadius);
     let minZ = Math.max(0, gridPos[1] - blockRadius);
     let maxX = Math.min(this.gridSize[0] - 1, gridPos[0] + blockRadius);
@@ -264,6 +264,24 @@ export class Terrain {
     return false;
   }
 
+  notToCloseToRoad(gridPos: vec2): boolean {
+    if(this.checkGridPosOutOfBounds(gridPos)) return false;
+
+    let blockRadius = 1;
+    let minX = Math.max(0, gridPos[0] - blockRadius);
+    let minZ = Math.max(0, gridPos[1] - blockRadius);
+    let maxX = Math.min(this.gridSize[0] - 1, gridPos[0] + blockRadius);
+    let maxZ = Math.min(this.gridSize[1] - 1, gridPos[1] + blockRadius);
+    for(let i = minX; i <= maxX; i++) {
+      for (let j = minZ; j <= maxZ; j++) {
+        if(this.gridParts[i][j].containsStreet == true) return false;
+        if(this.gridParts[i][j].containsHighway == true) return false;
+      }
+    }
+
+    return true;
+  }
+
   /**
    *
    * @param gridPos
@@ -273,6 +291,7 @@ export class Terrain {
 
     return (
       this.hasNearbyStreet(gridPos)
+      && this.notToCloseToRoad(gridPos)
       && this.gridParts[gridPos[0]][gridPos[1]].roadSegmentIds.length == 0
       && this.positionOnLand(gridPos)
     );
@@ -491,7 +510,7 @@ export class Terrain {
 
     //check to make sure all values in expanded column are possible
     for (let z = startPos[2]; z < startPos[2] + footprint[2]; z++) {
-      if (!possibleSet.has(xVal.toString() + '-' + z.toString())) {
+      if (!possibleSet.has(xVal.toString() + '-' + z.toString()) || !this.getBuildingSuitability(vec2.fromValues(xVal, z))) {
         expandedX = false;
       }
     }
@@ -517,7 +536,7 @@ export class Terrain {
 
     //check to make sure all values in expanded column are possible
     for (let x = startPos[0]; x < startPos[0] + footprint[0]; x++) {
-      if (!possibleSet.has(x.toString() + '-' + zVal.toString())) {
+      if (!possibleSet.has(x.toString() + '-' + zVal.toString())|| !this.getBuildingSuitability(vec2.fromValues(x, zVal))) {
         expandedZ = false;
       }
     }

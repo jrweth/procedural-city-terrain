@@ -18,7 +18,7 @@ const controls = {
   'Show Roads': true,
   'Show Population Density': true,
   'Show Buildings': true,
-  'Show Build Sites': true,
+  'Show Build Sites': false,
 
   'Elevation Seed': 89.3943,
   'Population Seed': 1.234,
@@ -30,7 +30,7 @@ const controls = {
   'Street Segment Length': 12,
   'Street Iterations': 3,
 
-  'Num Buildings': 1000,
+  'Num Buildings': 2000,
   'Load Scene': loadScene, // A function pointer, essentially
 };
 // Add controls to the gui

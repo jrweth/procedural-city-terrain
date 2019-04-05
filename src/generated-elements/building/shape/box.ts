@@ -45,7 +45,7 @@ export class Box extends Shape{
   }
 
   addRoof(blockType: BlockType) {
-    let height =  Math.max(this.footprint[Axis.X], this.footprint[Axis.Z]);
+    let height =  Math.min(this.footprint[Axis.X], this.footprint[Axis.Z]);
     let roof = new StandardRoof({
       blockType: blockType,
       pos: vec3.fromValues(this.pos[0], this.pos[1] + this.footprint[1], this.pos[2]),
