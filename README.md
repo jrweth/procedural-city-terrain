@@ -1,8 +1,10 @@
 # CIS 566 Homework 6: City Generation
-
+J. Reuben Wetherbee (wetherbe)
 ## Objective
-- Continue practicing WebGL and Typescript
-- Experiment with noise functions to procedurally generate the surface of a planet
+- Use procedurally generated techniques to create the terrain, highways, streets and buildings of a comletely generated city
+
+## Demo
+WebGL demo can be found at (https://jrweth.github.io/procedural-city-terrain)
 
 ## Base Code
 ![](img/1_elevation.png)
