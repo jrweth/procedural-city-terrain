@@ -473,7 +473,7 @@ export class Terrain {
   createBuilding(x:number, z:number, seed: number, set: Set<string>) {
     let gridPart: GridPart = this.gridParts[x][z];
     let maxFootprint = gridPart.avgDensity * this.streetSegmentLength * 10;
-    let pos = vec3.fromValues(x, 2.0, z);
+    let pos = vec3.fromValues(x, 2.5, z);
     let footprint = vec3.fromValues(1, 1, 1);
 
     //remove start from the possible

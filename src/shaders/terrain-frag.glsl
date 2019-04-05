@@ -33,6 +33,10 @@ int getTerrainType() {
     return LAND;
 }
 
+vec3 getMapThemeBackground() {
+    return vec3(164.0 / 255.0, 233.0 / 255.0, 1.0);
+}
+
 vec3 getMapThemeColor() {
     vec3 groundColor = vec3(.0, 1, 0);
     int type = getTerrainType();
@@ -83,20 +87,25 @@ vec3 getDazzleThemeColor() {
 
 }
 
-
+vec3 getDazzleThemeBackground() {
+    return vec3(0.0, 0.0, 0.0);
+}
 void main()
 {
     vec3 groundColor = vec3(.0, 1, 0);
-
+    vec3 backgroundColor = vec3(1.0, 1.0, 1.0);
     if(u_DisplayOptions[2] == MAP_THEME) {
         groundColor = getMapThemeColor();
+        backgroundColor = getMapThemeBackground();
     }
     else if(u_DisplayOptions[2] == DAZZLE_THEME) {
         groundColor = getDazzleThemeColor();
+        backgroundColor = getDazzleThemeBackground();
     }
+
 
 
     float t = clamp(smoothstep(40.0, 50.0, length(fs_Pos)), 0.0, 1.0); // Distance fog
 
-    out_Col = vec4(mix(groundColor, vec3(164.0 / 255.0, 233.0 / 255.0, 1.0), t), 1.0);
+    out_Col = vec4(mix(groundColor, backgroundColor, t), 1.0);
 }

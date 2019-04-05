@@ -1,4 +1,4 @@
-import {mat4, vec4} from 'gl-matrix';
+import {mat4, vec3, vec4} from 'gl-matrix';
 import Drawable from './Drawable';
 import Camera from '../../Camera';
 import {gl} from '../../globals';
@@ -11,6 +11,10 @@ class OpenGLRenderer {
 
   setClearColor(r: number, g: number, b: number, a: number) {
     gl.clearColor(r, g, b, a);
+  }
+
+  setClearColor3(color: vec3) {
+    gl.clearColor(color[0], color[1], color[2], 1);
   }
 
   setSize(width: number, height: number) {

@@ -128,6 +128,15 @@ function redoRoads() {
   });
 }
 
+function getBackgroundColor(): vec3 {
+  if(controls.Theme == 1) {
+    return vec3.fromValues(164.0 / 255.0, 233.0 / 255.0, 1.0);
+  }
+  else if(controls.Theme == 2) {
+    return vec3.fromValues(0,0,0);
+  }
+}
+
 /**
  * Initialize the display controls
  * @param options
@@ -135,7 +144,8 @@ function redoRoads() {
 function addDisplayControls(options: {
   terrainShader: ShaderProgram,
   buildingShader: ShaderProgram,
-  roadShader: ShaderProgram
+  roadShader: ShaderProgram,
+  renderer: OpenGLRenderer
 }) {
   let displayFolder = gui.addFolder('display');
   let theme = displayFolder.add(controls, 'Theme', {'Map': 1, 'Dazzle': 2}).listen();
@@ -149,6 +159,7 @@ function addDisplayControls(options: {
     options.terrainShader.setDisplayOptions(getDisplayOptions());
     options.roadShader.setDisplayOptions(getDisplayOptions());
     options.buildingShader.setDisplayOptions(getDisplayOptions());
+    options.renderer.setClearColor3(getBackgroundColor());
   })
   showHighways.onChange(redoRoads);
   showStreets.onChange(redoRoads);
@@ -259,7 +270,7 @@ function main() {
   const camera = new Camera(vec3.fromValues(0, 10, -20), vec3.fromValues(0, 0, 0));
 
   const renderer = new OpenGLRenderer(canvas);
-  renderer.setClearColor(164.0 / 255.0, 233.0 / 255.0, 1.0, 1);
+  renderer.setClearColor3(getBackgroundColor());
   gl.enable(gl.DEPTH_TEST);
 
   const terrainShader = new ShaderProgram([
@@ -282,7 +293,12 @@ function main() {
   buildingShader.setDisplayOptions(getDisplayOptions());
 
   //add all the controls
-  addDisplayControls({terrainShader: terrainShader, buildingShader: buildingShader, roadShader: roadShader});
+  addDisplayControls({
+    terrainShader: terrainShader,
+    buildingShader: buildingShader,
+    roadShader: roadShader,
+    renderer: renderer
+  });
   addTerrainControls();
   addRoadControls();
   addBuildingControls();
