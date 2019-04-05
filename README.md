@@ -11,11 +11,13 @@ The first step in the city creation was to create a basic terrain height map usi
 - Water: Any heights below 0.4 were designated as water.
 - Coast: Height between 0.4 and 0.43
 - Land: Heights above 0.43
+
 ![](img/1_elevation.png)
 
 ## Population Distribution with Worley Noise
 The population distribution was created procedurally using [Worley Noise](https://en.wikipedia.org/wiki/Worley_noise).
 The areas of higher population density are designated in the image below by the darker shades.
+
 ![](img/2_population.png)
 
 ## Highway Creation using Context Sensitive L-System
@@ -34,12 +36,14 @@ The roads were also context aware of the elevation.  Since bridges do not genera
 over the water portions of the terrain, there was no branching or change of direction of the road.  A future enhancement
 would be to make sure that there are no intersections of roads over the water.  This would entail checking ahead for an eventual
 intersection when the road reaches the coast.
+
 ![](img/3_highways.png)
 
 ## Street Creation using Context Sensitive L-System
 Using the location of the Highways and the population density, random locations for neighborhood block structures of 
 streets were created.  This secondary street l-system was also context sensitive.  If the end point of a road segment ended 
 close to the endpoint of another segment, the end points were coordinated and the l-system branch was terminated.
+
 ![](img/4_streets.png)
 
 ## Determining Building Site Suitability by rasterizing terrain
@@ -50,12 +54,14 @@ into a grid format.  Each grid part was then evaluated for suitability for a bui
 - Is at least 2 grid units away from a highway or a street
 
 The locations suitable for building location are colored in grey in the image below.
+
 ![](img/5_building_sites.png)
 
 ## Placement, Height and Footprint of Buildings using Population Density
 Once the building sites were determined, buildings were randomly placed on the building sites.  Their initial 
 height and footprint were randomized and then scaled according to the population density at the location.
 The higher the population density, the larger the maximum height and footprint.
+
 ![](img/6_buildings.png)
 
 ## Shape Grammars and instanced rendering for generating buildings
@@ -67,11 +73,13 @@ was the simple cube.
 
 The following standard base deformations were defined.  These deformations could then be combined together create
 more complex shapes.
+
 ![](img/cube_deformations.png)
 
 ## Sample building generations
 The shape grammar defined for the buildings was organized so that for each replacement rule, the new shape(s) would 
 fit into the footprint of the previous shapes.  This "subtractive" methodology ensured that the building would
 not exceed the original building footprint.
+
 ![](img/buildings.png)
 
