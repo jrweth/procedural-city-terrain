@@ -15,7 +15,8 @@ import RoadSegments from "./geometry/RoadSegments";
 // Define an object with application parameters and button callbacks
 // This will be referred to by dat.GUI's functions that add GUI elements.
 const controls = {
-  'Show Roads': true,
+  'Show Highways': true,
+  'Show Streets' : true,
   'Show Population Density': true,
   'Show Buildings': true,
   'Show Build Sites': false,
@@ -74,7 +75,10 @@ function loadScene() {
     scale: plane.scale}
   );
   roadSegments.create();
-  roadSegments.setInstanceVBOs(terrain.roads.segments, terrain.roads.intersections);
+  roadSegments.setInstanceVBOs(terrain.roads.segments, terrain.roads.intersections, {
+    showHighways: controls["Show Highways"],
+    showStreets: controls["Show Streets"]
+  });
 
   //create the building geometry
   cube = new Cube({
@@ -116,6 +120,13 @@ function getDisplayOptions(): vec4 {
   );
 }
 
+function redoRoads() {
+  roadSegments.setInstanceVBOs(terrain.roads.segments, terrain.roads.intersections, {
+    showHighways: controls["Show Highways"],
+    showStreets: controls["Show Streets"]
+  });
+}
+
 /**
  * Initialize the display controls
  * @param options
@@ -125,10 +136,14 @@ function addDisplayControls(options: {
 
 }) {
   let displayFolder = gui.addFolder('display');
-  let showRoads = displayFolder.add(controls, 'Show Roads');
+  let showHighways = displayFolder.add(controls, 'Show Highways').listen();
+  let showStreets = displayFolder.add(controls, 'Show Streets').listen();
   let showPop = displayFolder.add(controls, 'Show Population Density').listen();
   let showBuildings = displayFolder.add(controls, 'Show Buildings').listen();
   let showBuildSites = displayFolder.add(controls, 'Show Build Sites').listen();
+
+  showHighways.onChange(redoRoads);
+  showStreets.onChange(redoRoads);
   showPop.onChange(() => {
     options.terrainShader.setDisplayOptions(getDisplayOptions());
   });
@@ -296,7 +311,7 @@ function main() {
     renderer.render(camera, terrainShader, [
       plane
     ]);
-    if(controls["Show Roads"]) {
+    if(controls["Show Highways"] || controls["Show Streets"]) {
       renderer.render(camera, roadShader, [roadSegments]);
     }
     if(controls["Show Buildings"]) {

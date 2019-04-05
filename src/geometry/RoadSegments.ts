@@ -50,7 +50,10 @@ class RoadSegments extends Drawable {
     return screenPos;
   }
 
-  setInstanceVBOs(segments: Segment[], intersections: Intersection[]) {
+  setInstanceVBOs(segments: Segment[], intersections: Intersection[], options: {
+      showHighways?: boolean,
+      showStreets?: boolean
+  }) {
     this.generateTranslate();
     this.generateCol();
 
@@ -58,22 +61,29 @@ class RoadSegments extends Drawable {
     let colors: number[] = [];
     let width: number;
 
-    this.numInstances = segments.length;
+    this.numInstances = 0;
 
     for(let i = 0; i < segments.length; i++) {
-      let startPos: vec2 = intersections[segments[i].startIntersectionId].pos;
-      let endPos: vec2 = intersections[segments[i].endIntersectionId].pos;
-      let startPosScreen = this.gridPosToScreenPos(startPos);
-      let endPosScreen = this.gridPosToScreenPos(endPos);
+      if(
+        (segments[i].roadType == RoadType.HIGHWAY && options.showHighways)
+        || (segments[i].roadType == RoadType.STREET && options.showStreets)
+      ) {
+        this.numInstances ++;
+        let startPos: vec2 = intersections[segments[i].startIntersectionId].pos;
+        let endPos: vec2 = intersections[segments[i].endIntersectionId].pos;
+        let startPosScreen = this.gridPosToScreenPos(startPos);
+        let endPosScreen = this.gridPosToScreenPos(endPos);
 
-      offsets.push(startPosScreen[0], 0, startPosScreen[1], 0);
+        offsets.push(startPosScreen[0], 0, startPosScreen[1], 0);
 
-      switch(segments[i].roadType) {
-        case RoadType.HIGHWAY: width = 0.5; break
-        case RoadType.STREET:    width = 0.2; break
+        switch(segments[i].roadType) {
+          case RoadType.HIGHWAY: width = 0.5; break
+          case RoadType.STREET:    width = 0.2; break
+        }
+        length = vec2.dist(startPosScreen, endPosScreen);
+        colors.push(length, width, segments[i].rotation, 0);
+
       }
-      length = vec2.dist(startPosScreen, endPosScreen);
-      colors.push(length, width, segments[i].rotation, 0);
     }
 
     this.offsets = new Float32Array(offsets);
