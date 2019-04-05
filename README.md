@@ -6,6 +6,8 @@ J. Reuben Wetherbee (wetherbe)
 ## Demo
 WebGL demo can be found at (https://jrweth.github.io/procedural-city-terrain)
 
+![](img/final.png)
+
 ## Basic Terrain with FBM 
 The first step in the city creation was to create a basic terrain height map using [Factianal Brownian Motion](https://en.wikipedia.org/wiki/Fractional_Brownian_motion).
 - Water: Any heights below 0.4 were designated as water.
@@ -83,3 +85,30 @@ not exceed the original building footprint.
 
 ![](img/buildings.png)
 
+
+## Themed Shaders
+
+To add a bit of pizzaz to the visual 2 different themes were implemented using the vertex and fragment WebGL shaders.
+- Map: Simple shading using flat colors
+- Electric Night: stylized futuristic shading for the night scene
+
+## Building Shading - Night
+The Shading of the buildings was accomplished by highlighting the underlying geometry using a luminosity that falls
+off the further the distance from the original edges of the geometry.
+
+![](img/building_shading.png)
+
+
+## Road Shading - Night
+
+Shading for the roads was accomplished by using worley noise to simulate the blacktop. Stripes and dashes were 
+also added to the middle of the roads to simulate lane markers
+
+![](img/road_shading.png)
+
+## Land Shading - Night
+
+Land Shading was accomplished by utilizing the original height map for the terrain created using Fractional Brownian
+ Motion and mixing several colors based upon the height at the given point.
+
+![](img/night_terrain.png)

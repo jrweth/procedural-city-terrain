@@ -74,7 +74,7 @@ vec3 getDazzleThemeColor() {
 
     //stripes in the highway
     if(abs(fs_Pos.z) < 0.05 && fs_Col.y >= 0.5) {
-       return stripeColor;
+       roadColor = stripeColor;
     }
     //dashes on the streets
     if(
@@ -82,7 +82,7 @@ vec3 getDazzleThemeColor() {
       && fs_Col.y < 0.5
       && floor(mod(fs_Pos.x * 8.0, 2.0)) == 0.0
     ) {
-        return stripeColor;
+        roadColor =  stripeColor;
     }
 
     //add worley noise to the road
